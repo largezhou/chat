@@ -4,3 +4,21 @@ body {
   padding: 0;
   margin: 0;
 }
+
+.online-indicate {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00ff88;
+  position: absolute;
+  right: 3px;
+  top: 3px;
+
+  &.off {
+    background: #c4c4c4;
+  }
+}
+
+.flex-spacer {
+  flex-grow: 1 !important;
+}

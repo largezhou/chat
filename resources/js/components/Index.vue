@@ -1,18 +1,34 @@
 <template>
-  <div class="container">
-    <div class="wrapper">
-      <div class="toolbar"/>
-      <div class="main-wrap">
-        <div class="sidebar"/>
-        <div class="main">
-          <div class="recent">
+  <div class="index">
+    <div class="page-main">
+      <div class="header"/>
+      <div class="main">
+        <div class="contact"/>
+        <div class="chat-main" :style="{ background: black ? '#12152f' : '#fff' }">
+          <div class="recent-items">
             <recent-contact-item
               v-for="item of recentContacts"
               :key="item.id"
               :item="item"
             />
           </div>
-          <div class="chat-zone"/>
+          <div class="dialog-main">
+            <div class="dialog-header">
+              <avatar avatar="http://chat.l.com/uploads/61c1b32a961b0d868a78dae00e4997f9.png" width="60" height="60"/>
+              <div class="target-name">
+                <span>头上有灰机</span>
+                <span class="online-indicate"/>
+              </div>
+              <div class="flex-spacer"/>
+              <span style="color: #fff;" @click="black = !black">好友</span>
+            </div>
+            <div class="dialog-items">
+              <dialog-item/>
+              <dialog-item me/>
+              <dialog-item/>
+              <dialog-item me/>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -23,6 +39,7 @@
 export default {
   name: 'Index',
   data: () => ({
+    black: true,
     recentContacts: [
       {
         id: 1,
@@ -60,7 +77,7 @@ export default {
 $chat-radius: 12px;
 $toolbar-height: 70px;
 
-.container {
+.index {
   position: absolute;
   display: flex;
   justify-content: center;
@@ -69,7 +86,7 @@ $toolbar-height: 70px;
   height: 100%;
 }
 
-.wrapper {
+.page-main {
   width: 1200px;
   height: 800px;
   border-radius: $chat-radius;
@@ -77,7 +94,7 @@ $toolbar-height: 70px;
   flex-direction: column;
 }
 
-.toolbar {
+.header {
   background: #19234b;
   height: $toolbar-height;
   border-radius: $chat-radius $chat-radius 0 0;
@@ -86,28 +103,28 @@ $toolbar-height: 70px;
   flex-shrink: 0;
 }
 
-.main-wrap {
+.main {
   display: flex;
   width: 100%;
   height: 100%;
 }
 
-.sidebar {
+.contact {
   width: 220px;
   flex-shrink: 0;
   background: #212950;
   border-bottom-left-radius: $chat-radius;
 }
 
-.main {
+.chat-main {
   width: 100%;
-  background: #10132c;
+  background: #12152f;
   padding-bottom: 30px;
   border-bottom-right-radius: $chat-radius;
   position: relative;
 }
 
-.recent {
+.recent-items {
   position: absolute;
   left: 0;
   top: 0;
@@ -117,10 +134,30 @@ $toolbar-height: 70px;
   padding: 20px 15px 20px 20px;
 }
 
-.chat-zone {
+.dialog-main {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  padding: 20px 30px 20px 315px;
+  padding: 0px 30px 0px 315px;
+}
+
+.dialog-header {
+  display: flex;
+  height: 90px;
+  border-bottom: 1px solid #293055;
+  align-items: center;
+}
+
+.target-name {
+  color: #fff;
+  padding: 0px 0px 15px 10px;
+  position: relative;
+}
+
+.online-indicate {
+  position: absolute;
+  right: -20px;
+  width: 10px;
+  height: 10px;
 }
 </style>

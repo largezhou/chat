@@ -1,16 +1,15 @@
 <template>
-  <div class="card" :class="cardStyles" @click="select">
+  <div class="recent-contact-item" :class="cardStyles" @click="select">
     <div class="avatar-item">
-      <div class="avatar">
-        <img :src="item.avatar">
-        <div class="online" :class="{ off: !item.online }"/>
-      </div>
+      <avatar :avatar="item.avatar">
+        <div class="online-indicate" :class="{ off: !item.online }"/>
+      </avatar>
     </div>
-    <div class="content">
+    <div class="name-msg">
       <div class="name">{{ item.name }}</div>
       <div class="msg">{{ item.recent_content }}</div>
     </div>
-    <div class="indicate">
+    <div class="time-unread">
       <div class="time">{{ item.created_at }}</div>
       <div class="unread" v-show="item.unreads_count">{{ item.unreads_count }}</div>
     </div>
@@ -47,7 +46,7 @@ export default {
 <style scoped lang="scss">
 $card-radius: 6px;
 
-.card {
+.recent-contact-item {
   display: flex;
   width: 100%;
   background: #191e3f;
@@ -66,7 +65,7 @@ $card-radius: 6px;
 
   &.active {
     width: calc(100% + 20px);
-    background: linear-gradient(to bottom right, #036fff, #16a1ff);
+    background: linear-gradient(to right, #036fff, #16a1ff);
 
     .msg {
       color: #475180;
@@ -81,40 +80,14 @@ $card-radius: 6px;
   display: flex;
   justify-content: center;
   align-items: center;
-}
 
-.avatar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 50px;
-  height: 50px;
-  position: relative;
-
-  img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-}
-
-.online {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #00ff88;
-  position: absolute;
-  right: 3px;
-  top: 3px;
-
-  &.off {
-    background: #c4c4c4;
+  ::v-deep .avatar {
+    position: relative;
   }
 }
 
 $content-padding: 16px;
-.content {
+.name-msg {
   padding: $content-padding 0px;
   width: 100%;
   display: flex;
@@ -136,7 +109,7 @@ $content-padding: 16px;
   -webkit-box-orient: vertical;
 }
 
-.indicate {
+.time-unread {
   padding-top: 12px;
   width: 60px;
   flex-shrink: 0;
