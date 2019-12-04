@@ -1,7 +1,19 @@
 <template>
   <div class="index">
     <div class="page-main">
-      <div class="header"/>
+      <div class="header">
+        <h2 style="color: #fff;">CHAT</h2>
+        <div class="flex-spacer"/>
+        <button type="button" class="btn header-item">我要聊天</button>
+        <button type="button" class="btn header-item pa-0">
+          <avatar
+            class="header-item"
+            avatar="http://chat.l.com/uploads/61c1b32a961b0d868a78dae00e4997f9.png"
+            width="30"
+            height="30"
+          />
+        </button>
+      </div>
       <div class="main">
         <div class="contact"/>
         <div class="chat-main" :style="{ background: black ? '#12152f' : '#fff' }">
@@ -75,7 +87,6 @@ export default {
 
 <style scoped lang="scss">
 $chat-radius: 12px;
-$toolbar-height: 70px;
 
 .index {
   position: absolute;
@@ -96,11 +107,20 @@ $toolbar-height: 70px;
 
 .header {
   background: #19234b;
-  height: $toolbar-height;
+  height: 70px;
   border-radius: $chat-radius $chat-radius 0 0;
   box-shadow: 0px 5px 8px -1px rgba(0, 0, 0, 0.3);
   z-index: 1;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 40px;
+}
+
+.header-item {
+  + .header-item {
+    margin-left: 30px;
+  }
 }
 
 .main {

@@ -1,17 +1,17 @@
 <template>
-  <div class="recent-contact-item" :class="cardStyles" @click="select">
+  <div class="recent-contact-item my-1" :class="cardStyles" @click="select">
     <div class="avatar-item">
       <avatar :avatar="item.avatar">
         <div class="online-indicate" :class="{ off: !item.online }"/>
       </avatar>
     </div>
-    <div class="name-msg">
+    <div class="name-msg py-2">
       <div class="name">{{ item.name }}</div>
       <div class="msg">{{ item.recent_content }}</div>
     </div>
-    <div class="time-unread">
+    <div class="time-unread pt-1">
       <div class="time">{{ item.created_at }}</div>
-      <div class="unread" v-show="item.unreads_count">{{ item.unreads_count }}</div>
+      <div class="unread mt-2" v-show="item.unreads_count">{{ item.unreads_count }}</div>
     </div>
   </div>
 </template>
@@ -51,7 +51,6 @@ $card-radius: 6px;
   width: 100%;
   background: #191e3f;
   height: 90px;
-  margin: 8px 0;
   border-radius: $card-radius;
   cursor: pointer;
   box-shadow: 0px 0px 5px 2px #0d0f1d;
@@ -86,9 +85,7 @@ $card-radius: 6px;
   }
 }
 
-$content-padding: 16px;
 .name-msg {
-  padding: $content-padding 0px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -110,7 +107,6 @@ $content-padding: 16px;
 }
 
 .time-unread {
-  padding-top: 12px;
   width: 60px;
   flex-shrink: 0;
   border-radius: $card-radius;
@@ -125,7 +121,6 @@ $content-padding: 16px;
 }
 
 .unread {
-  margin-top: 15px;
   color: #fff;
   width: 19px;
   height: 19px;
