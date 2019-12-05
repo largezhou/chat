@@ -10,14 +10,13 @@ export default {
   name: 'Avatar',
   props: {
     avatar: String,
-    width: [String, Number],
-    height: [String, Number],
+    size: String,
   },
   computed: {
     styles() {
       return {
-        width: `${this.width}px`,
-        height: `${this.height}px`,
+        width: this.size,
+        height: this.size,
       }
     },
   },

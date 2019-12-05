@@ -7,16 +7,17 @@
         <button type="button" class="btn header-item">我要聊天</button>
         <button type="button" class="btn header-item pa-0">
           <avatar
+            id="user-info"
+            @click.native="showModal"
             class="header-item"
             avatar="http://chat.l.com/uploads/61c1b32a961b0d868a78dae00e4997f9.png"
-            width="30"
-            height="30"
+            size="30px"
           />
         </button>
       </div>
       <div class="main">
         <div class="contact"/>
-        <div class="chat-main" :style="{ background: black ? '#12152f' : '#fff' }">
+        <div class="chat-main pb-4" :style="{ background: black ? '#12152f' : '#fff' }">
           <div class="recent-items">
             <recent-contact-item
               v-for="item of recentContacts"
@@ -26,8 +27,8 @@
           </div>
           <div class="dialog-main">
             <div class="dialog-header">
-              <avatar avatar="http://chat.l.com/uploads/61c1b32a961b0d868a78dae00e4997f9.png" width="60" height="60"/>
-              <div class="target-name">
+              <avatar avatar="http://chat.l.com/uploads/61c1b32a961b0d868a78dae00e4997f9.png" size="60px"/>
+              <div class="target-name pb-2 pl-1">
                 <span>头上有灰机</span>
                 <span class="online-indicate"/>
               </div>
@@ -46,10 +47,12 @@
     </div>
 
     <modal
-      style="position: fixed; top: 50%; left: 50%;"
       custom-class="user-info-modal"
       width="200px"
       height="250px"
+      v-model="modal"
+      attach="#user-info"
+      align="right-top"
     >
       <div class="info-content">
         <avatar class="pa-2" avatar="http://chat.l.com/uploads/61c1b32a961b0d868a78dae00e4997f9.png"/>
@@ -57,7 +60,7 @@
         <div style="font-size: 12px; color: #5e6e86;">拍黄片 @ Ctrl + C & V</div>
         <div class="hr my-2"/>
         <div class="flex-spacer"/>
-        <button type="button" class="btn my-2">加我好友</button>
+        <button type="button" class="btn my-2" @click="modal = !modal">加我好友</button>
       </div>
     </modal>
   </div>
@@ -68,6 +71,7 @@ export default {
   name: 'Index',
   data: () => ({
     black: true,
+    modal: false,
     recentContacts: [
       {
         id: 1,
@@ -98,6 +102,11 @@ export default {
       },
     ],
   }),
+  methods: {
+    showModal(e) {
+      this.modal = !this.modal
+    },
+  },
 }
 </script>
 
@@ -155,7 +164,6 @@ $chat-radius: 12px;
 .chat-main {
   width: 100%;
   background: #12152f;
-  padding-bottom: 30px;
   border-bottom-right-radius: $chat-radius;
   position: relative;
 }
@@ -186,7 +194,6 @@ $chat-radius: 12px;
 
 .target-name {
   color: #fff;
-  padding: 0px 0px 15px 10px;
   position: relative;
 }
 
@@ -199,7 +206,7 @@ $chat-radius: 12px;
 </style>
 
 <style lang="scss">
-.user-info-modal.modal {
+.user-info-modal {
   .hr {
     width: 100%;
     border-bottom: 2px solid #293055;
