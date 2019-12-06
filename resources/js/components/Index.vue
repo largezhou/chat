@@ -8,10 +8,10 @@
         <button type="button" class="btn header-item pa-0">
           <avatar
             id="user-info"
-            @click.native="showModal"
+            @click.native="loginModal = !loginModal"
             class="header-item"
             avatar="http://chat.l.com/uploads/61c1b32a961b0d868a78dae00e4997f9.png"
-            size="30px"
+            size="35px"
           />
         </button>
       </div>
@@ -46,23 +46,11 @@
       </div>
     </div>
 
-    <modal
-      custom-class="user-info-modal"
-      width="200px"
-      height="250px"
-      v-model="modal"
+    <login-modal
+      v-model="loginModal"
       attach="#user-info"
       align="right-top"
-    >
-      <div class="info-content">
-        <avatar class="pa-2" avatar="http://chat.l.com/uploads/61c1b32a961b0d868a78dae00e4997f9.png"/>
-        <div class="pb-1">头上有灰机</div>
-        <div style="font-size: 12px; color: #5e6e86;">拍黄片 @ Ctrl + C & V</div>
-        <div class="hr my-2"/>
-        <div class="flex-spacer"/>
-        <button type="button" class="btn my-2" @click="modal = !modal">加我好友</button>
-      </div>
-    </modal>
+    />
   </div>
 </template>
 
@@ -71,7 +59,7 @@ export default {
   name: 'Index',
   data: () => ({
     black: true,
-    modal: false,
+    loginModal: false,
     recentContacts: [
       {
         id: 1,
@@ -206,17 +194,4 @@ $chat-radius: 12px;
 </style>
 
 <style lang="scss">
-.user-info-modal {
-  .hr {
-    width: 100%;
-    border-bottom: 2px solid #293055;
-  }
-
-  .info-content {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-}
 </style>

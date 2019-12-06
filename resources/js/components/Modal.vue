@@ -93,12 +93,17 @@ export default {
     },
     onAfterEnter(el) {
       el.style.transformOrigin = ''
+      this.setAutoFocus()
     },
     onClickOutside() {
       this.$emit('input', false)
     },
     onAfterLeave() {
       this.clearPos()
+    },
+    setAutoFocus() {
+      const el = this.$el.querySelector('[autofocus]')
+      el && el.focus && el.focus()
     },
   },
   watch: {
