@@ -14,5 +14,29 @@ export const getPos = el => {
     el = el.offsetParent
   } while (el)
 
-  return { x, y }
+  return {
+    x: x - window.scrollX,
+    y: y - window.scrollY,
+  }
+}
+
+/**
+ * 把值转成带像素单位的值
+ *
+ * @param num
+ * @param unit
+ * @returns {string|null}
+ */
+export const numToPixel = (num, unit = 'px') => {
+  if ([null, undefined, ''].indexOf(num) !== -1) {
+    return null
+  }
+
+  num = String(num)
+  const units = ['px', '%']
+  if (units.some(i => num.endsWith(i))) {
+    return num
+  }
+
+  return num + unit
 }

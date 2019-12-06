@@ -1,5 +1,10 @@
 <template>
-  <transition name="modal-scale" @enter="onEnter" @after-enter="onAfterEnter">
+  <transition
+    name="modal-scale"
+    @enter="onEnter"
+    @after-enter="onAfterEnter"
+    @after-leave="onAfterLeave"
+  >
     <div
       class="modal"
       :class="[customClass]"
@@ -13,7 +18,7 @@
 </template>
 
 <script>
-import { getPos } from '@/utils'
+import { getPos, numToPixel } from '@/utils'
 
 export default {
   name: 'Modal',
@@ -41,10 +46,10 @@ export default {
   computed: {
     styles() {
       return {
-        width: this.width,
-        height: this.height,
-        top: this.top + 'px',
-        left: this.left + 'px',
+        width: numToPixel(this.width),
+        height: numToPixel(this.height),
+        top: numToPixel(this.top),
+        left: numToPixel(this.left),
       }
     },
     alignPos() {
@@ -52,7 +57,7 @@ export default {
     },
   },
   methods: {
-    async getPosFromAttach() {
+    async setPosFromAttach() {
       await this.$nextTick()
       const node = typeof this.attach === 'string'
         ? document.querySelector(this.attach)
@@ -79,6 +84,10 @@ export default {
       }
       // TODO 处理超出屏幕的情况
     },
+    clearPos() {
+      this.top = null
+      this.left = null
+    },
     onEnter(el) {
       el.style.transformOrigin = this.alignPos.join(' ')
     },
@@ -88,11 +97,14 @@ export default {
     onClickOutside() {
       this.$emit('input', false)
     },
+    onAfterLeave() {
+      this.clearPos()
+    },
   },
   watch: {
     value(newVal) {
       if (newVal) {
-        this.getPosFromAttach()
+        this.setPosFromAttach()
       }
     },
   },
