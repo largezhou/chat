@@ -1,12 +1,15 @@
 <template>
-  <div
-    class="modal"
-    :class="[customClass]"
-    :style="styles"
-    v-show="value"
-  >
-    <slot/>
-  </div>
+  <transition name="modal-scale" @enter="onEnter" @after-enter="onAfterEnter">
+    <div
+      class="modal"
+      :class="[customClass]"
+      :style="styles"
+      v-show="value"
+      v-click-outside="onClickOutside"
+    >
+      <slot/>
+    </div>
+  </transition>
 </template>
 
 <script>
@@ -44,9 +47,9 @@ export default {
         left: this.left + 'px',
       }
     },
-  },
-  mounted() {
-    window.t = this
+    alignPos() {
+      return this.align.split('-')
+    },
   },
   methods: {
     async getPosFromAttach() {
@@ -56,8 +59,7 @@ export default {
         : this.attach
       const pos = getPos(node)
 
-      const align = this.align.split('-')
-      for (const a of align) {
+      for (const a of this.alignPos) {
         switch (a) {
           case 'right':
             this.left = pos.x - this.$el.offsetWidth + node.offsetWidth
@@ -72,10 +74,19 @@ export default {
             this.top = pos.y - this.$el.offsetHeight + node.offsetHeight
             break
           default:
-            // do nothing
+          // do nothing
         }
       }
       // TODO 处理超出屏幕的情况
+    },
+    onEnter(el) {
+      el.style.transformOrigin = this.alignPos.join(' ')
+    },
+    onAfterEnter(el) {
+      el.style.transformOrigin = ''
+    },
+    onClickOutside() {
+      this.$emit('input', false)
     },
   },
   watch: {
@@ -90,11 +101,24 @@ export default {
 
 <style scoped lang="scss">
 .modal {
-  position: absolute;
+  position: fixed;
   z-index: 1000;
   color: #fff;
   background: #20274f;
   border-radius: 10px;
   box-shadow: 0 0 20px 0 #000;
+}
+
+.modal-scale-enter-active,
+.modal-scale-leave-active {
+  transition: all .3s ease-in-out;
+}
+
+.modal-scale-enter {
+  transform: scale(0);
+}
+
+.modal-scale-leave-to {
+  opacity: 0;
 }
 </style>
