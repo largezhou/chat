@@ -24,4 +24,10 @@ mix.js('resources/js/app.js', 'public/js')
       },
     },
   })
-  .browserSync(process.env.APP_URL)
+  .browserSync({
+    files: [
+      'resources/views/**/*.php',
+      `${Config.publicPath || 'public'}/**/*.(js|css)`,
+    ],
+    proxy: process.env.APP_URL,
+  })
