@@ -3,24 +3,26 @@
     v-bind="$attrs"
     v-on="$listeners"
   >
-    <form class="login-form" autocomplete="off">
+    <lz-form
+      class="login-form"
+      autocomplete="off"
+      :errors.sync="errors"
+    >
       <div class="title">登录</div>
-      <label>
-        <span v-show="false"/>
-        <input
+      <form-item prop="email">
+        <lz-input
           v-model="form.email"
           placeholder="帐号"
           autofocus
-        >
-      </label>
-      <label>
-        <span v-show="false"/>
-        <input
+        />
+      </form-item>
+      <form-item prop="password">
+        <lz-input
           v-model="form.password"
           type="password"
           placeholder="密码"
-        >
-      </label>
+        />
+      </form-item>
       <button
         type="button"
         class="btn w-100 login-btn"
@@ -28,12 +30,13 @@
       >
         登录
       </button>
-    </form>
+    </lz-form>
   </modal>
 </template>
 
 <script>
 import { postLogin } from '@/api'
+import { handleValidateErrors } from '@/utils'
 
 export default {
   name: 'LoginModal',
@@ -42,10 +45,22 @@ export default {
       email: '',
       password: '',
     },
+    errors: {},
   }),
   methods: {
     async onLogin() {
-      const res = await postLogin(this.form)
+      this.errors = {}
+      try {
+        const res = await postLogin(this.form)
+        log(res)
+      } catch (e) {
+        const res = e.response
+        if (res.status === 422) {
+          this.errors = handleValidateErrors(res)
+        } else {
+          throw e
+        }
+      }
     },
   },
 }
@@ -54,9 +69,6 @@ export default {
 <style scoped lang="scss">
 .login-form {
   width: 185px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   padding: 20px;
 }
 
@@ -67,41 +79,6 @@ export default {
   text-align: left;
   width: 100%;
   font-weight: 700;
-}
-
-label {
-  display: flex;
-  margin-bottom: 25px;
-
-  & > span {
-    flex-shrink: 0;
-    font-size: 14px;
-    line-height: 35px;
-    color: #b8c3eb;
-    text-align: right;
-    margin-right: 16px;
-  }
-}
-
-$input-height: 35px;
-input {
-  border: none;
-  border-radius: 10px;
-  height: $input-height;
-  line-height: $input-height;
-  padding: 10px;
-  box-sizing: border-box;
-  background: #12152f;
-  color: #b8c3eb;
-  display: inline-block;
-  width: 100%;
-  outline: none;
-  transition: all .3s;
-  font-size: 14px;
-
-  &:focus {
-    box-shadow: 0px 0px 0px 3px rgba(0, 102, 255, 0.4);
-  }
 }
 
 .login-btn {

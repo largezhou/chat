@@ -59,7 +59,7 @@ export default {
   name: 'Index',
   data: () => ({
     black: true,
-    loginModal: false,
+    loginModal: true,
     recentContacts: [
       {
         id: 1,

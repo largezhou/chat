@@ -40,3 +40,24 @@ export const numToPixel = (num, unit = 'px') => {
 
   return num + unit
 }
+
+/**
+ * 把 laravel 返回的错误消息，处理成每个字段只有一条
+ *
+ * @param res 响应
+ * @return {{}}
+ */
+export const handleValidateErrors = (res) => {
+  let errors = {}
+  if (res && (res.status === 422 || res.status === 429)) {
+    ({ errors } = res.data)
+    if (!errors) {
+      return {}
+    }
+    Object.keys(errors).forEach((k) => {
+      errors[k] = errors[k][0]
+    })
+  }
+
+  return errors
+}
