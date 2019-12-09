@@ -2,8 +2,10 @@
   <modal
     v-bind="$attrs"
     v-on="$listeners"
+    @hidden="onHidden"
   >
     <lz-form
+      ref="form"
       class="login-form"
       autocomplete="off"
       :errors.sync="errors"
@@ -55,12 +57,15 @@ export default {
         log(res)
       } catch (e) {
         const res = e.response
-        if (res.status === 422) {
+        if (res.status === 422 || res.status === 429) {
           this.errors = handleValidateErrors(res)
         } else {
           throw e
         }
       }
+    },
+    onHidden() {
+      this.$refs.form.reset()
     },
   },
 }

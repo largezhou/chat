@@ -25,6 +25,15 @@ export default {
     },
     labelPos: String,
   },
+  methods: {
+    reset() {
+      this.clearErrors()
+      this.$refs.form.reset()
+    },
+    clearErrors() {
+      this.$emit('update:errors', {})
+    },
+  },
 }
 </script>
 

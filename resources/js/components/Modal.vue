@@ -94,12 +94,14 @@ export default {
     onAfterEnter(el) {
       el.style.transformOrigin = ''
       this.setAutoFocus()
+      this.$emit('shown')
     },
     onClickOutside() {
       this.$emit('input', false)
     },
     onAfterLeave() {
       this.clearPos()
+      this.$emit('hidden')
     },
     setAutoFocus() {
       const el = this.$el.querySelector('[autofocus]')
