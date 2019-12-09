@@ -30,4 +30,9 @@ class LoginController extends Controller
     {
         return 'username';
     }
+
+    public function loggedOut(Request $request)
+    {
+        return response(null, 204);
+    }
 }

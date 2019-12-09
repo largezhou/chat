@@ -4,20 +4,31 @@
       <div class="header">
         <h2 style="color: #fff;">CHAT</h2>
         <div class="flex-spacer"/>
-        <button type="button" class="btn header-item">我要聊天</button>
-        <button type="button" class="btn header-item pa-0">
-          <avatar
-            id="user-info"
-            @click.native="loginModal = !loginModal"
-            class="header-item"
-            avatar="http://chat.l.com/uploads/61c1b32a961b0d868a78dae00e4997f9.png"
-            size="35px"
-          />
-        </button>
+        <div v-if="user" class="header-item">
+          <button type="button" class="btn">我要聊天</button>
+          <button
+            id="user-context-btn"
+            type="button"
+            class="btn pa-0"
+            @click="onLogout"
+          >
+            <avatar :avatar="user.avatar" size="35px"/>
+          </button>
+        </div>
+        <div v-if="!user" class="header-item">
+          <button
+            type="button"
+            id="login-modal-btn"
+            class="btn"
+            @click="loginModal = !loginModal"
+          >
+            加入
+          </button>
+        </div>
       </div>
       <div class="main">
         <div class="contact"/>
-        <div class="chat-main pb-4" :style="{ background: black ? '#12152f' : '#fff' }">
+        <div class="chat-main pb-4">
           <div class="recent-items">
             <recent-contact-item
               v-for="item of recentContacts"
@@ -33,7 +44,7 @@
                 <span class="online-indicate"/>
               </div>
               <div class="flex-spacer"/>
-              <span style="color: #fff;" @click="black = !black">好友</span>
+              <span style="color: #fff;">好友</span>
             </div>
             <div class="dialog-items">
               <dialog-item/>
@@ -48,18 +59,20 @@
 
     <login-modal
       v-model="loginModal"
-      attach="#user-info"
+      attach="#login-modal-btn"
       align="right-top"
     />
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: 'Index',
   data: () => ({
-    black: true,
-    loginModal: true,
+    loginModal: false,
+    userContextModal: true,
     recentContacts: [
       {
         id: 1,
@@ -90,9 +103,17 @@ export default {
       },
     ],
   }),
+  computed: {
+    ...mapState({
+      user: state => state.user,
+    }),
+  },
+  created() {
+    this.$store.dispatch('getUser')
+  },
   methods: {
-    showModal(e) {
-      this.modal = !this.modal
+    onLogout() {
+      this.$store.dispatch('logout')
     },
   },
 }
@@ -131,6 +152,13 @@ $chat-radius: 12px;
 }
 
 .header-item {
+  display: flex;
+  flex-direction: row;
+
+  button + button {
+    margin-left: 30px;
+  }
+
   + .header-item {
     margin-left: 30px;
   }
@@ -191,7 +219,4 @@ $chat-radius: 12px;
   width: 10px;
   height: 10px;
 }
-</style>
-
-<style lang="scss">
 </style>

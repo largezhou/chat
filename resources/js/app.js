@@ -3,8 +3,10 @@ import Vue from 'vue'
 import '@/bootstrap'
 import '@/components'
 import '@/directives'
+import store from '@/store'
 
 const app = new Vue({
+  store,
   el: '#app',
 })
 
