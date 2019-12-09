@@ -9,10 +9,10 @@
       :errors.sync="errors"
     >
       <div class="title">登录</div>
-      <form-item prop="email">
+      <form-item prop="username">
         <lz-input
-          v-model="form.email"
-          placeholder="帐号"
+          v-model="form.username"
+          placeholder="用户名"
           autofocus
         />
       </form-item>
@@ -42,7 +42,7 @@ export default {
   name: 'LoginModal',
   data: () => ({
     form: {
-      email: '',
+      username: '',
       password: '',
     },
     errors: {},

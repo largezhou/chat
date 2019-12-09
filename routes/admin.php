@@ -62,5 +62,7 @@ Route::prefix('admin-api')
                 ->except(['store', 'show', 'create']);
             Route::put('system-media', 'SystemMediaController@batchUpdate')->name('system-media.batch.update');
             Route::delete('system-media', 'SystemMediaController@batchDestroy')->name('system-media.batch.destroy');
+
+            Route::resource('users', 'UserController')->except(['show', 'create']);
         });
     });

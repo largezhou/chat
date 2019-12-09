@@ -24,4 +24,8 @@ export default {
   'configs/create': () => import('@v/configs/Form'),
   'configs/:id(\\d+)/edit': () => import('@v/configs/Form'),
   'configs/:categorySlug': () => import('@v/configs/ConfigValuesForm'),
+
+  'users/create': () => import('@v/users/Form'),
+  'users': () => import('@v/users/Index'),
+  'users/:id(\\d+)/edit': () => import('@v/users/Form'),
 }
