@@ -5,25 +5,23 @@
         <h2 style="color: #fff;">CHAT</h2>
         <div class="flex-spacer"/>
         <div v-if="user" class="header-item">
-          <button type="button" class="btn">我要聊天</button>
-          <button
+          <lz-button>我要聊天</lz-button>
+          <lz-button
             id="user-context-btn"
-            type="button"
-            class="btn pa-0"
-            @click="onLogout"
+            class="pa-0"
+            style="width: 35px;"
+            :action="onLogout"
           >
             <avatar :avatar="user.avatar" size="35px"/>
-          </button>
+          </lz-button>
         </div>
         <div v-if="!user" class="header-item">
-          <button
-            type="button"
+          <lz-button
             id="login-modal-btn"
-            class="btn"
             @click="loginModal = !loginModal"
           >
             加入
-          </button>
+          </lz-button>
         </div>
       </div>
       <div class="main">
@@ -112,8 +110,8 @@ export default {
     this.$store.dispatch('getUser')
   },
   methods: {
-    onLogout() {
-      this.$store.dispatch('logout')
+    async onLogout() {
+      await this.$store.dispatch('logout')
     },
   },
 }

@@ -18,8 +18,9 @@ export default new Vuex.Store({
       const { data } = await getUserInfo()
       commit('SET_USER', data)
     },
-    async logout() {
+    async logout({ commit }) {
       await postLogout()
+      commit('SET_USER', null)
       location.href = '/'
     },
   },

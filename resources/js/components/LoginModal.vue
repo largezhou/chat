@@ -25,13 +25,12 @@
           placeholder="密码"
         />
       </form-item>
-      <button
-        type="button"
-        class="btn w-100 login-btn"
-        @click="onLogin"
+      <lz-button
+        class="w-100 login-btn"
+        :action="onLogin"
       >
         登录
-      </button>
+      </lz-button>
     </lz-form>
   </modal>
 </template>
