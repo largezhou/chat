@@ -4,6 +4,7 @@
     class="lz-form"
     :class="{ 'label-top': labelPos === 'top' }"
     v-bind="$attrs"
+    @keydown.enter="onEnter"
   >
     <slot/>
   </form>
@@ -32,6 +33,17 @@ export default {
     },
     clearErrors() {
       this.$emit('update:errors', {})
+    },
+    onEnter(e) {
+      const t = e.target
+      window.t = t
+      if (
+        t.tagName === 'INPUT' &&
+        !t.disabled &&
+        !t.getAttribute('no-submit')
+      ) {
+        this.$emit('enter-submit')
+      }
     },
   },
 }

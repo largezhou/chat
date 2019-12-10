@@ -3,6 +3,7 @@
     v-bind="$attrs"
     @input="onInput"
     :type="type"
+    :no-submit="noSubmit"
   >
 </template>
 
@@ -13,6 +14,10 @@ export default {
   props: {
     value: [String, Number],
     type: String,
+    /**
+     * 在 LzForm 表单中，并且聚焦时，按下回车，是否触发表单的 enter-submit 事件
+     */
+    noSubmit: Boolean,
   },
   mounted() {
     this.formItem.registerInput(this)

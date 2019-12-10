@@ -9,6 +9,7 @@
       class="login-form"
       autocomplete="off"
       :errors.sync="errors"
+      @enter-submit="onSubmit"
     >
       <div class="title">登录</div>
       <form-item prop="username">
@@ -26,6 +27,7 @@
         />
       </form-item>
       <lz-button
+        ref="loginBtn"
         class="w-100 login-btn"
         :action="onLogin"
       >
@@ -66,6 +68,9 @@ export default {
     },
     onHidden() {
       this.$refs.form.reset()
+    },
+    onSubmit() {
+      this.$refs.loginBtn.onClick()
     },
   },
 }
