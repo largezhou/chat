@@ -61,3 +61,17 @@ export const handleValidateErrors = (res) => {
 
   return errors
 }
+
+/**
+ * 避免 json 解析报错
+ * @param {string} s
+ * @param {any} defaultVal
+ * @returns {any}
+ */
+export const jsonParse = (s, defaultVal = null) => {
+  try {
+    return JSON.parse(s)
+  } catch (e) {
+    return defaultVal
+  }
+}

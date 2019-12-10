@@ -106,9 +106,6 @@ export default {
       user: state => state.user,
     }),
   },
-  created() {
-    this.$store.dispatch('getUser')
-  },
   methods: {
     async onLogout() {
       await this.$store.dispatch('logout')

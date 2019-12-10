@@ -14,10 +14,6 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    async getUser({ commit }) {
-      const { data } = await getUserInfo()
-      commit('SET_USER', data)
-    },
     async logout({ commit }) {
       await postLogout()
       commit('SET_USER', null)
