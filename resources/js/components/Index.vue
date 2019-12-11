@@ -5,7 +5,7 @@
         <h2 style="color: #fff;">CHAT</h2>
         <div class="flex-spacer"/>
         <div v-if="user" class="header-item">
-          <lz-button>我要聊天</lz-button>
+          <lz-button @click="onStartChat">我要聊天</lz-button>
           <lz-button
             id="user-context-btn"
             class="pa-0"
@@ -65,6 +65,8 @@
 
 <script>
 import { mapState } from 'vuex'
+import { jsonParse } from '@/utils'
+import Cookie from 'js-cookie'
 
 export default {
   name: 'Index',
@@ -109,6 +111,83 @@ export default {
   methods: {
     async onLogout() {
       await this.$store.dispatch('logout')
+    },
+    onStartChat() {
+      this.intervals = {}
+      this.connectWS()
+    },
+    encode(type, data = null) {
+      return JSON.stringify({ type, data })
+    },
+    connectWS() {
+      this.ws = new WebSocket('ws://chat.l.com:9501')
+
+      this.ws.addEventListener('open', e => {
+        this.clearInterval('reconnectInterval')
+
+        // this.intervals.WSOnlineCountInterval = setInterval(() => {
+        //   this.ws.send(this.encode('online_count'))
+        // }, 6000)
+
+        this.ws.send(this.encode('auth', Cookie.get('laravel_session')))
+      })
+
+      this.ws.addEventListener('message', e => {
+        const { data, type } = jsonParse(e.data)
+
+        switch (type) {
+          case 'connected':
+            this.intervals.WSPingInterval = setInterval(() => {
+              this.ws.send(this.encode('ping'))
+            }, data.interval * 1000)
+            break
+          case 'online_count':
+            log('当前在线人数：', data)
+            break
+          case 'login_other':
+            this.ws.close(4001, 'login_other')
+            break
+          default:
+          // do nothing
+        }
+      })
+
+      this.ws.addEventListener('close', e => {
+        log('close: ', e);
+        ['WSPingInterval', 'WSOnlineCountInterval'].forEach(i => {
+          this.clearInterval(i)
+        })
+
+        if ([4000, 4001].indexOf(e.code) !== -1) {
+          log(e.reason)
+          return
+        }
+
+        this.reconnectWS(e)
+      })
+
+      this.ws.addEventListener('error', e => {
+        log('error: ', e)
+        this.reconnectWS(e)
+      })
+
+      window.ws = this.ws
+    },
+    reconnectWS(e) {
+      if (this.intervals.reconnectInterval) {
+        log('already in reconnecting...')
+        return
+      }
+
+      log('go reconnect')
+      this.connectWS()
+      this.intervals.reconnectInterval = setInterval(this.connectWS, 5000)
+    },
+    clearInterval(key) {
+      if (this.intervals[key]) {
+        clearInterval(this.intervals[key])
+        this.intervals[key] = null
+      }
     },
   },
 }
