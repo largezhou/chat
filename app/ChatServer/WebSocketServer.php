@@ -2,10 +2,9 @@
 
 namespace App\ChatServer;
 
+use App\ChatServer\Events\Event;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 use Swoole\Http\Request;
 use Swoole\Table;
 use Swoole\WebSocket\Frame;
@@ -13,14 +12,6 @@ use Swoole\WebSocket\Server;
 
 class WebSocketServer
 {
-    const E_CONNECTED = 'connected';
-    const E_PING = 'ping';
-    const E_PONG = 'pong';
-    const E_ONLINE_COUNT = 'online_count';
-    const E_LOGIN_OTHER = 'login_other';
-    const E_AUTH = 'auth';
-    const INTERVAL = 30;
-    const TIMEOUT = self::INTERVAL * 2;
     /**
      * @var \Swoole\WebSocket\Server
      */
@@ -30,14 +21,14 @@ class WebSocketServer
      */
     protected $console;
     protected $events = [
-        'start', 'message', 'open', 'close',
+        'start', 'message', 'open', 'close', 'workerStart',
     ];
     /**
      * 存储客户端相关的数据
      *
      * @var \Swoole\Table
      */
-    protected $clients;
+    public $clients;
     /**
      * @var array
      */
@@ -47,20 +38,21 @@ class WebSocketServer
      *
      * @var \Swoole\Table
      */
-    protected $users;
+    public $users;
 
     /**
      * @param \Illuminate\Console\Command $console
      */
     public function __construct(Command $console)
     {
-        $this->config = $config = config('ws');
         $this->console = $console;
+
+        $this->config = $config = config('ws');
         $this->server = new Server($config['host'], $config['port']);
         $this->server->set([
             'worker_num' => $config['worker_num'],
-            'heartbeat_check_interval' => static::INTERVAL,
-            'heartbeat_idle_time' => static::TIMEOUT,
+            'heartbeat_check_interval' => $config['interval'],
+            'heartbeat_idle_time' => $config['timeout'],
             'log_file' => storage_path('logs/chat_server.log'),
         ]);
 
@@ -73,7 +65,7 @@ class WebSocketServer
     protected function initEvents()
     {
         foreach ($this->events as $e) {
-            $this->server->on($e, function () use ($e) {
+            $this->server->on(strtolower($e), function () use ($e) {
                 $this->{'on'.ucfirst($e)}(...func_get_args());
             });
         }
@@ -81,87 +73,36 @@ class WebSocketServer
 
     protected function onStart(Server $server)
     {
-        $this->console->info('已启动');
+        $this->console->info("已启动：{$server->host}:{$server->port}");
     }
 
     protected function onMessage(Server $server, Frame $frame)
     {
-        $fd = $frame->fd;
-
-        $data = $this->decodeData($frame->data);
-        $type = $data['type'];
-        $data = $data['data'];
-
-        switch ($type) {
-            case static::E_PING:
-                $server->push($fd, $this->encodeData(static::E_PONG));
-                break;
-            case static::E_ONLINE_COUNT:
-                $server->push($fd, $this->encodeData(static::E_ONLINE_COUNT, $this->clients->count()));
-                break;
-            case static::E_AUTH:
-                Session::setId(Crypt::decrypt($data, false));
-                Session::start();
-
-                if ($userId = Auth::id()) {
-                    $oldFd = $this->users->get($userId, 'fd');
-                    if ($oldFd) {
-                        $this->clients->del($oldFd);
-                        $server->push($oldFd, $this->encodeData(static::E_LOGIN_OTHER));
-                    }
-                    $this->clients->set($fd, [
-                        'user_id' => $userId,
-                    ]);
-                    $this->users->set($userId, [
-                        'fd' => $fd,
-                    ]);
-                } else {
-                    $server->push($fd, $this->encodeData(static::E_AUTH, 'failed'));
-                }
-                break;
-            default:
-                // do nothing
-        }
+        $type = Data::decode($frame->data)['type'];
+        $eventClass = '\\App\\ChatServer\\Events\\'.Str::studly($type);
+        event(new $eventClass($server, $frame, $this));
     }
 
     protected function onOpen(Server $server, Request $request)
     {
         $fd = $request->fd;
 
-        $this->addClient($server, $fd);
+        $this->clients->set($fd, []);
 
-        $server->push($fd, $this->encodeData(static::E_CONNECTED, [
-            'interval' => static::INTERVAL,
-            'timeout' => static::TIMEOUT,
+        $server->push($fd, Data::encode(Event::CONNECTED, [
+            'interval' => $this->config['interval'],
+            'timeout' => $this->config['timeout'],
         ]));
     }
 
     protected function onClose(Server $server, $fd)
     {
-        $this->removeClient($fd);
+        $this->clients->del($fd);
     }
 
     public function start()
     {
         $this->server->start();
-    }
-
-    protected function encodeData(string $type, $data = null): string
-    {
-        return json_encode(compact('type', 'data'));
-    }
-
-    protected function decodeData(string $data)
-    {
-        $res = json_decode($data, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            $res = [];
-        }
-
-        return [
-            'type' => $res['type'] ?? '',
-            'data' => $res['data'] ?? null,
-        ];
     }
 
     protected function createClientsTable()
@@ -171,22 +112,15 @@ class WebSocketServer
         $clients->create();
     }
 
-    protected function addClient(Server $server, $fd)
-    {
-        $this->clients->set($fd, [
-            'fd' => $fd,
-        ]);
-    }
-
-    protected function removeClient($fd)
-    {
-        $this->clients->del($fd);
-    }
-
     protected function createUsersTable()
     {
         $users = $this->users = new Table(1024);
         $users->column('fd', Table::TYPE_INT, 10);
         $users->create();
+    }
+
+    protected function onWorkerStart(Server $server, int $workerId)
+    {
+        $this->console->info("{$workerId} 号开工了");
     }
 }

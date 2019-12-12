@@ -116,7 +116,7 @@ export default {
       this.intervals = {}
       this.connectWS()
     },
-    encode(type, data = null) {
+    encode(type, data) {
       return JSON.stringify({ type, data })
     },
     connectWS() {
@@ -125,9 +125,9 @@ export default {
       this.ws.addEventListener('open', e => {
         this.clearInterval('reconnectInterval')
 
-        // this.intervals.WSOnlineCountInterval = setInterval(() => {
-        //   this.ws.send(this.encode('online_count'))
-        // }, 6000)
+        this.intervals.WSOnlineCountInterval = setInterval(() => {
+          this.ws.send(this.encode('online_count'))
+        }, 10 * 1000)
 
         this.ws.send(this.encode('auth', Cookie.get('laravel_session')))
       })
@@ -144,8 +144,8 @@ export default {
           case 'online_count':
             log('当前在线人数：', data)
             break
-          case 'login_other':
-            this.ws.close(4001, 'login_other')
+          case 'other_logged_in':
+            this.ws.close(4001, 'other_logged_in')
             break
           default:
           // do nothing
