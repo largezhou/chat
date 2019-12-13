@@ -2,10 +2,8 @@
 
 namespace App\ChatServer\Events;
 
-use App\ChatServer\Data;
 use App\ChatServer\WebSocketServer;
 use Swoole\WebSocket\Frame;
-use Swoole\WebSocket\Server;
 
 abstract class Event
 {
@@ -16,22 +14,17 @@ abstract class Event
     const OTHER_LOGGED_IN = 'other_logged_in';
     const AUTH = 'auth';
     /**
-     * @var \Swoole\WebSocket\Server
+     * @var \App\ChatServer\WebSocketServer
      */
-    public $server;
+    public $ws;
     /**
      * @var \Swoole\WebSocket\Frame
      */
     public $frame;
-    /**
-     * @var \App\ChatServer\WebSocketServer
-     */
-    public $ws;
 
-    public function __construct(Server $server, Frame $frame, WebSocketServer $ws)
+    public function __construct(WebSocketServer $ws, Frame $frame)
     {
         $this->ws = $ws;
-        $this->server = $server;
         $this->frame = $frame;
     }
 
@@ -52,6 +45,6 @@ abstract class Event
 
     public function data()
     {
-        return Data::decode($this->frame->data)['data'];
+        return $this->ws->data($this->frame->data)['data'];
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\ChatServer\Listeners;
 
-use App\ChatServer\Data;
 use App\ChatServer\Events\Event;
 
 class OnlineCount
@@ -16,9 +15,10 @@ class OnlineCount
      */
     public function handle($event)
     {
-        $event->server->push(
+        $event->ws->push(
             $event->fd(),
-            Data::encode(Event::ONLINE_COUNT, $event->clients()->count())
+            Event::ONLINE_COUNT,
+            $event->clients()->count()
         );
     }
 }

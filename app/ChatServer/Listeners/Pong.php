@@ -2,7 +2,6 @@
 
 namespace App\ChatServer\Listeners;
 
-use App\ChatServer\Data;
 use App\ChatServer\Events\Event;
 
 class Pong
@@ -16,9 +15,9 @@ class Pong
      */
     public function handle($event)
     {
-        $event->server->push(
+        $event->ws->push(
             $event->fd(),
-            Data::encode(Event::PONG)
+            Event::PONG
         );
     }
 }

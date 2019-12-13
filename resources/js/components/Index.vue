@@ -112,7 +112,7 @@ export default {
     }),
   },
   created() {
-    // this.onStartChat()
+    this.onStartChat()
   },
   methods: {
     async onLogout() {
@@ -136,7 +136,7 @@ export default {
           this.ws.send(this.encode('online_count'))
         }, 10 * 1000)
 
-        this.ws.send(this.encode('auth', Cookie.get('laravel_session')))
+        this.user && this.ws.send(this.encode('auth', Cookie.get('laravel_session')))
       })
 
       this.ws.addEventListener('message', e => {

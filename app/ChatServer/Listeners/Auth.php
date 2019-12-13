@@ -2,7 +2,6 @@
 
 namespace App\ChatServer\Listeners;
 
-use App\ChatServer\Data;
 use App\ChatServer\Events\Event;
 use Illuminate\Support\Facades\Auth as LAuth;
 use Illuminate\Support\Facades\Crypt;
@@ -39,7 +38,7 @@ class Auth
         } else {
             $res = 'failed';
         }
-        $event->server->push($fd, Data::encode(Event::AUTH, $res));
+        $event->ws->push($fd, Event::AUTH, $res);
     }
 
     protected function startSession(string $key)

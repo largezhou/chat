@@ -109,16 +109,6 @@ class WebSocketServer
 
     protected function onStart(Server $server)
     {
-        Timer::tick(2000, function () {
-            $t = [];
-            foreach ($this->users as $userId => $row) {
-                $t[$userId] = $row;
-            }
-            dump($t);
-
-            dump(str_repeat('=', 50));
-        });
-
         $this->startLaravelQueueWorkTask($server);
 
         $this->console->info("已启动：{$server->host}:{$server->port}");
@@ -133,9 +123,9 @@ class WebSocketServer
 
     protected function onMessage(Server $server, Frame $frame)
     {
-        $type = Data::decode($frame->data)['type'];
+        $type = $this->data($frame->data)['type'];
         $eventClass = '\\App\\ChatServer\\Events\\'.Str::studly($type);
-        event(new $eventClass($server, $frame, $this));
+        event(new $eventClass($this, $frame));
     }
 
     protected function onOpen(Server $server, Request $request)
@@ -144,11 +134,10 @@ class WebSocketServer
 
         $this->clients->set($fd, []);
 
-        $server->push($fd, Data::encode(Event::CONNECTED, [
+        $this->push($fd, Event::CONNECTED, [
             'interval' => $this->config['interval'],
             'timeout' => $this->config['timeout'],
-            'fd' => $fd,
-        ]));
+        ]);
     }
 
     protected function onClose(Server $server, int $fd)
@@ -195,5 +184,15 @@ class WebSocketServer
             $this->app->instance(static::class, $this);
             Artisan::call('queue:work --queue=ws');
         }
+    }
+
+    public function push($fd, string $type, $data = null)
+    {
+        $this->server->push($fd, Data::encode($type, $data));
+    }
+
+    public function data(string $data): array
+    {
+        return Data::decode($data);
     }
 }
