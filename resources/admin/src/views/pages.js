@@ -28,4 +28,6 @@ export default {
   'users/create': () => import('@v/users/Form'),
   'users': () => import('@v/users/Index'),
   'users/:id(\\d+)/edit': () => import('@v/users/Form'),
+
+  'user-friends': () => import('@v/user-friends/Index'),
 }

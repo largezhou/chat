@@ -4,8 +4,10 @@ namespace App\Admin\Controllers;
 
 use App\Admin\Filters\UserFilter;
 use App\Admin\Requests\UserRequest;
+use App\Admin\Resources\UserFriendResource;
 use App\Admin\Resources\UserResource;
 use App\Models\User;
+use App\Models\UserFriend;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -41,5 +43,15 @@ class UserController extends Controller
     {
         $user->delete();
         return $this->noContent();
+    }
+
+    public function friendships(Request $request)
+    {
+        $userFriends = UserFriend::query()
+            ->with(['inviter', 'invitee'])
+            ->orderBy('created_at')
+            ->paginate();
+
+        return $this->ok(UserFriendResource::collection($userFriends));
     }
 }

@@ -23,9 +23,10 @@
       </el-table-column>
       <el-table-column prop="created_at" label="添加时间" width="180"/>
       <el-table-column prop="updated_at" label="修改时间" width="180"/>
-      <el-table-column label="操作" width="150">
+      <el-table-column label="操作" width="220">
         <template #default="{ row, $index }">
           <el-button-group>
+            <button-link size="small" :to="`/user-friends?friends_of=${row.name}`">查看好友</button-link>
             <row-to-edit/>
             <row-destroy/>
           </el-button-group>
@@ -45,6 +46,7 @@ import { getUsers, updateUser } from '@/api/users'
 import RowDestroy from '@c/LzTable/RowDestroy'
 import RowToEdit from '@c/LzTable/RowToEdit'
 import InputEdit from '@c/quick-edit/InputEdit'
+import ButtonLink from '@c/ButtonLink'
 
 export default {
   name: 'Index',
@@ -54,6 +56,7 @@ export default {
     RowDestroy,
     SearchForm,
     Pagination,
+    ButtonLink,
   },
   data() {
     return {

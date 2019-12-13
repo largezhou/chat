@@ -64,5 +64,7 @@ Route::prefix('admin-api')
             Route::delete('system-media', 'SystemMediaController@batchDestroy')->name('system-media.batch.destroy');
 
             Route::resource('users', 'UserController')->except(['show', 'create']);
+
+            Route::resource('user-friends', 'UserFriendController')->only(['index', 'destroy']);
         });
     });

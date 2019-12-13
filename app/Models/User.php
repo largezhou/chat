@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Admin\Traits\ModelHelpers;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
@@ -44,5 +46,32 @@ class User extends Authenticatable
         }
 
         return $this->update($inputs);
+    }
+
+    /**
+     * 我添加的朋友
+     */
+    public function friendsOfMine(): BelongsToMany
+    {
+        return $this->belongsToMany(static::class, 'user_friend', 'user_id', 'friend_id')
+            ->withPivot(['created_at', 'accepted']);
+    }
+
+    /**
+     * 添加我的朋友
+     */
+    public function friendsOf(): BelongsToMany
+    {
+        return $this->belongsToMany(static::class, 'user_friend', 'friend_id', 'user_id')
+            ->withPivot(['created_at', 'accepted']);
+    }
+
+    /**
+     * 所有朋友
+     * @return Collection|static[]
+     */
+    public function friends(): Collection
+    {
+        return $this->friendsOfMine->merge($this->friendsOf);
     }
 }
