@@ -4,8 +4,11 @@
       <div class="header">
         <h2 style="color: #fff;">CHAT</h2>
         <div class="flex-spacer"/>
-        <div v-if="user" class="header-item">
+        <div class="header-item">
           <lz-button @click="onStartChat">我要聊天</lz-button>
+          <lz-button @click="onAuthChat">认证</lz-button>
+        </div>
+        <div v-if="user" class="header-item">
           <lz-button
             id="user-context-btn"
             class="pa-0"
@@ -108,11 +111,15 @@ export default {
       user: state => state.user,
     }),
   },
+  created() {
+    // this.onStartChat()
+  },
   methods: {
     async onLogout() {
       await this.$store.dispatch('logout')
     },
     onStartChat() {
+      this.reconnectTimes = 3
       this.intervals = {}
       this.connectWS()
     },
@@ -145,7 +152,7 @@ export default {
             log('当前在线人数：', data)
             break
           case 'other_logged_in':
-            this.ws.close(4001, 'other_logged_in')
+            // location.reload()
             break
           default:
           // do nothing
@@ -187,6 +194,20 @@ export default {
       if (this.intervals[key]) {
         clearInterval(this.intervals[key])
         this.intervals[key] = null
+      }
+    },
+    onAuthChat() {
+      this.ws.send(this.encode('auth', Cookie.get('laravel_session')))
+    },
+  },
+  watch: {
+    user(newVal) {
+      if (
+        newVal &&
+        this.ws &&
+        (this.ws.readyState === WebSocket.OPEN)
+      ) {
+        this.onAuthChat()
       }
     },
   },

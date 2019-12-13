@@ -4,24 +4,28 @@ namespace App\ChatServer;
 
 use App\ChatServer\Events\Event;
 use Illuminate\Console\Command;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use Swoole\Http\Request;
 use Swoole\Table;
+use Swoole\Timer;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 
 class WebSocketServer
 {
+    const MAX_LARAVEL_QUEUE_WORKER = 4;
     /**
      * @var \Swoole\WebSocket\Server
      */
-    protected $server;
+    public $server;
     /**
      * @var \Illuminate\Console\Command
      */
     protected $console;
     protected $events = [
-        'start', 'message', 'open', 'close', 'workerStart',
+        'start', 'message', 'open', 'close', 'workerStart', 'task',
     ];
     /**
      * 存储客户端相关的数据
@@ -39,18 +43,34 @@ class WebSocketServer
      * @var \Swoole\Table
      */
     public $users;
+    /**
+     * @var \Illuminate\Foundation\Application
+     */
+    protected $app;
+    /**
+     * 用于执行 laravel queue:work 的 task id
+     *
+     * @var array
+     */
+    protected $laravelQueueWorkIds = [];
 
     /**
      * @param \Illuminate\Console\Command $console
+     * @param \Illuminate\Foundation\Application $app
      */
-    public function __construct(Command $console)
+    public function __construct(Command $console, Application $app)
     {
         $this->console = $console;
+        $this->app = $app;
 
         $this->config = $config = config('ws');
+
+        $this->setLaravelQueueWorkIds();
+
         $this->server = new Server($config['host'], $config['port']);
         $this->server->set([
             'worker_num' => $config['worker_num'],
+            'task_worker_num' => $config['task_worker_num'],
             'heartbeat_check_interval' => $config['interval'],
             'heartbeat_idle_time' => $config['timeout'],
             'log_file' => storage_path('logs/chat_server.log'),
@@ -60,6 +80,22 @@ class WebSocketServer
         $this->createUsersTable();
 
         $this->initEvents();
+    }
+
+    protected function setLaravelQueueWorkIds()
+    {
+        $num = $this->config['task_worker_num'];
+        if ($num <= 1) {
+            throw new \Exception('[ task_worker_num ] 至少要设置为 2');
+        }
+
+        if ($num <= static::MAX_LARAVEL_QUEUE_WORKER) {
+            $num -= 1;
+        } else {
+            $num = static::MAX_LARAVEL_QUEUE_WORKER;
+        }
+
+        $this->laravelQueueWorkIds = range(0, $num - 1);
     }
 
     protected function initEvents()
@@ -73,7 +109,26 @@ class WebSocketServer
 
     protected function onStart(Server $server)
     {
+        Timer::tick(2000, function () {
+            $t = [];
+            foreach ($this->users as $userId => $row) {
+                $t[$userId] = $row;
+            }
+            dump($t);
+
+            dump(str_repeat('=', 50));
+        });
+
+        $this->startLaravelQueueWorkTask($server);
+
         $this->console->info("已启动：{$server->host}:{$server->port}");
+    }
+
+    protected function startLaravelQueueWorkTask(Server $server)
+    {
+        foreach ($this->laravelQueueWorkIds as $workId) {
+            $server->task('queue:work', $workId);
+        }
     }
 
     protected function onMessage(Server $server, Frame $frame)
@@ -92,11 +147,15 @@ class WebSocketServer
         $server->push($fd, Data::encode(Event::CONNECTED, [
             'interval' => $this->config['interval'],
             'timeout' => $this->config['timeout'],
+            'fd' => $fd,
         ]));
     }
 
-    protected function onClose(Server $server, $fd)
+    protected function onClose(Server $server, int $fd)
     {
+        if ($userId = $this->clients->get($fd, 'user_id')) {
+            $this->users->del($userId);
+        }
         $this->clients->del($fd);
     }
 
@@ -116,11 +175,25 @@ class WebSocketServer
     {
         $users = $this->users = new Table(1024);
         $users->column('fd', Table::TYPE_INT, 10);
+        $users->column('session_id', Table::TYPE_STRING, 100);
         $users->create();
     }
 
     protected function onWorkerStart(Server $server, int $workerId)
     {
         $this->console->info("{$workerId} 号开工了");
+    }
+
+    protected function onTask(Server $server, int $taskId, int $fromId, string $data)
+    {
+        $this->runLaravelQueueWork($taskId);
+    }
+
+    protected function runLaravelQueueWork(int $taskId)
+    {
+        if (in_array($taskId, $this->laravelQueueWorkIds)) {
+            $this->app->instance(static::class, $this);
+            Artisan::call('queue:work --queue=ws');
+        }
     }
 }

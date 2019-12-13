@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Listeners\AddSessionIdToEvent;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -29,6 +30,10 @@ class EventServiceProvider extends ServiceProvider
         \App\ChatServer\Events\Auth::class => [
             \App\ChatServer\Listeners\Auth::class,
         ],
+
+        \Illuminate\Auth\Events\OtherDeviceLogout::class => [
+            \App\Listeners\DispatchOtherLogoutToWS::class,
+        ],
     ];
 
     /**
@@ -39,7 +44,5 @@ class EventServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
-
-        //
     }
 }
