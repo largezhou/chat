@@ -1,11 +1,11 @@
 <template>
-  <div class="dialog-item py-2" :class="{ me }">
+  <div class="dialog-item" :class="{ me }">
     <avatar avatar="http://chat.l.com/uploads/61c1b32a961b0d868a78dae00e4997f9.png"/>
     <div class="content-main">
-      <div class="content pa-2">
+      <div class="content">
         你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢
       </div>
-      <span class="time mt-1">17:24</span>
+      <span class="time">17:24</span>
     </div>
   </div>
 </template>
@@ -25,6 +25,8 @@ $dialog-radius: 15px;
 .dialog-item {
   display: flex;
   flex-direction: row;
+  padding-top: 20px;
+  padding-bottom: 10px;
 }
 
 .content-main {
@@ -41,11 +43,13 @@ $dialog-radius: 15px;
   background: linear-gradient(to right, #af53f9, #4c35ff);
   border-radius: $dialog-radius;
   box-shadow: 0 0 20px 8px #000;
+  padding: 16px;
 }
 
 .time {
   font-size: 12px;
   color: #5e6e86;
+  margin-top: 10px;
 }
 
 .dialog-item {

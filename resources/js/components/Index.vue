@@ -11,8 +11,7 @@
         <div v-if="user" class="header-item">
           <lz-button
             id="user-context-btn"
-            class="pa-0"
-            style="width: 35px;"
+            style="width: 35px; padding: 0px;"
             :action="onLogout"
           >
             <avatar :avatar="user.avatar" size="35px"/>
@@ -29,7 +28,7 @@
       </div>
       <div class="main">
         <contacts/>
-        <div class="chat-main pb-4">
+        <div class="chat-main">
           <div class="recent-items">
             <recent-contact-item
               v-for="item of recentContacts"
@@ -40,7 +39,7 @@
           <div class="dialog-main">
             <div class="dialog-header">
               <avatar avatar="http://chat.l.com/uploads/61c1b32a961b0d868a78dae00e4997f9.png" size="60px"/>
-              <div class="target-name pb-2 pl-1">
+              <div class="target-name">
                 <span>头上有灰机</span>
                 <span class="online-indicate"/>
               </div>
@@ -272,6 +271,7 @@ export default {
   background: #12152f;
   border-bottom-right-radius: $chat-radius;
   position: relative;
+  padding-bottom: 30px;
 }
 
 .recent-items {
@@ -301,6 +301,7 @@ export default {
 .target-name {
   color: #fff;
   position: relative;
+  padding: 0px 0px 16px 8px;
 }
 
 .online-indicate {

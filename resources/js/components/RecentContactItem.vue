@@ -1,17 +1,17 @@
 <template>
-  <div class="recent-contact-item my-1" :class="cardStyles" @click="select">
+  <div class="recent-contact-item" :class="cardStyles" @click="select">
     <div class="avatar-item">
       <avatar :avatar="item.avatar">
         <div class="online-indicate" :class="{ off: !item.online }"/>
       </avatar>
     </div>
-    <div class="name-msg py-2">
+    <div class="name-msg">
       <div class="name">{{ item.name }}</div>
       <div class="msg">{{ item.recent_content }}</div>
     </div>
-    <div class="time-unread pt-1">
+    <div class="time-unread">
       <div class="time">{{ item.created_at }}</div>
-      <div class="unread mt-2" v-show="item.unreads_count">{{ item.unreads_count }}</div>
+      <div class="unread" v-show="item.unreads_count">{{ item.unreads_count }}</div>
     </div>
   </div>
 </template>
@@ -50,11 +50,12 @@ $card-radius: 6px;
   display: flex;
   width: 100%;
   background: #191e3f;
-  height: 90px;
+  height: 96px;
   border-radius: $card-radius;
   cursor: pointer;
   box-shadow: 0px 0px 5px 2px #0d0f1d;
   transition: all .2s ease-in-out;
+  margin: 10px 0px;
 
   &:hover:not(.active) {
     transform: scale(1.03);
@@ -89,6 +90,7 @@ $card-radius: 6px;
   width: 100%;
   display: flex;
   flex-direction: column;
+  padding: 20px 0px;
 }
 
 .name {
@@ -113,6 +115,7 @@ $card-radius: 6px;
   display: flex;
   align-items: center;
   flex-direction: column;
+  padding-top: 10px;
 }
 
 .time {
@@ -128,5 +131,6 @@ $card-radius: 6px;
   background: #0980fe;
   text-align: center;
   font-size: 14px;
+  margin-top: 16px;
 }
 </style>
