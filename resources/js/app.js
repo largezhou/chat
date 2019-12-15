@@ -4,7 +4,7 @@ import '@/bootstrap'
 import '@/components'
 import '@/directives'
 import store from '@/store'
-import { jsonParse } from '@/utils'
+import { jsonParse } from '@/libs/utils'
 
 const app = new Vue({
   store,

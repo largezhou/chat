@@ -7,6 +7,12 @@ Auth::routes();
 
 Route::get('/', 'IndexController@index');
 
-Route::get('/users/info', 'UserController@info')
-    ->middleware(['auth'])
-    ->name('user.info');
+Route::prefix('/user')
+    ->group(function () {
+        Route::middleware(['auth'])
+            ->group(function () {
+                Route::get('/info', 'UserController@info')->name('user.info');
+                Route::get('/friends', 'UserController@friends')->name('user.friends');
+            });
+    });
+

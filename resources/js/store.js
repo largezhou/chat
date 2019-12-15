@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { getUserInfo, postLogout } from '@/api'
+import { postLogout } from '@/api'
+import _get from 'lodash/get'
 
 Vue.use(Vuex)
 
@@ -23,7 +24,7 @@ export default new Vuex.Store({
   getters: {
     getUserInfo(state) {
       return field => {
-        return _.get(state.user, field)
+        return _get(state.user, field)
       }
     },
   },

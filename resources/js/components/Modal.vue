@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { getPos, numToPixel } from '@/utils'
+import { getPos, numToPixel } from '@/libs/utils'
 
 export default {
   name: 'Modal',

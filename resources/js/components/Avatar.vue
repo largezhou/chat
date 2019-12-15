@@ -14,9 +14,12 @@ export default {
   },
   computed: {
     styles() {
+      const s = this.size
       return {
-        width: this.size,
-        height: this.size,
+        width: s,
+        height: s,
+        minWidth: s,
+        minHeight: s,
       }
     },
   },

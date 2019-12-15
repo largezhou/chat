@@ -5,7 +5,7 @@
       <span class="content">
         <slot/>
         <transition name="error-zoom-in">
-          <span v-if="error" class="error" :title="error">{{ error }}</span>
+          <span v-if="error" class="error ellipsis" :title="error">{{ error }}</span>
         </transition>
       </span>
     </label>
@@ -63,10 +63,7 @@ export default {
   padding-top: 3px;
   left: 0;
   top: 100%;
-  white-space: nowrap;
   width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .error-zoom-in-enter-active,

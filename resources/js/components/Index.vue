@@ -28,7 +28,7 @@
         </div>
       </div>
       <div class="main">
-        <div class="contact"/>
+        <contacts/>
         <div class="chat-main pb-4">
           <div class="recent-items">
             <recent-contact-item
@@ -68,7 +68,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { jsonParse } from '@/utils'
+import { jsonParse } from '@/libs/utils'
 import Cookie from 'js-cookie'
 
 export default {
@@ -105,6 +105,7 @@ export default {
         unreads_count: 3,
       },
     ],
+    friends: [],
   }),
   computed: {
     ...mapState({
@@ -112,7 +113,7 @@ export default {
     }),
   },
   created() {
-    this.onStartChat()
+    // this.onStartChat()
   },
   methods: {
     async onLogout() {
@@ -215,7 +216,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-$chat-radius: 12px;
+@import '~@/../sass/_variables';
 
 .index {
   position: absolute;
@@ -232,6 +233,7 @@ $chat-radius: 12px;
   border-radius: $chat-radius;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .header {
@@ -262,14 +264,7 @@ $chat-radius: 12px;
 .main {
   display: flex;
   width: 100%;
-  height: 100%;
-}
-
-.contact {
-  width: 220px;
-  flex-shrink: 0;
-  background: #212950;
-  border-bottom-left-radius: $chat-radius;
+  height: calc(100% - 70px);
 }
 
 .chat-main {

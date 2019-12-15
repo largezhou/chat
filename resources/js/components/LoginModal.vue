@@ -39,7 +39,7 @@
 
 <script>
 import { postLogin } from '@/api'
-import { handleValidateErrors } from '@/utils'
+import { handleValidateErrors } from '@/libs/utils'
 
 export default {
   name: 'LoginModal',
