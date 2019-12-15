@@ -16,6 +16,7 @@
     "browser-sync": "^2.26.7",
     "browser-sync-webpack-plugin": "2.0.1",
     "cross-env": "^5.1",
+    "dayjs": "^1.8.17",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
     "js-cookie": "^2.2.1",

@@ -1,11 +1,17 @@
 <template>
   <div class="contacts">
     <div class="title">联系人</div>
-    <contact-item
-      v-for="item of friends"
-      :key="item.id"
-      :contact="item"
-    />
+    <div
+      class="contact-item"
+      v-for="user of friends"
+      :key="user.id"
+      @click="onSelectContact(user)"
+    >
+      <avatar class="avatar" :avatar="user.avatar" size="35px">
+        <div class="online-indicate" :class="{ off: !user.online }"/>
+      </avatar>
+      <span class="name ellipsis">{{ user.name }}</span>
+    </div>
   </div>
 </template>
 
@@ -28,6 +34,9 @@ export default {
       const { data } = await getUserFriends()
       this.friends = data || []
     },
+    onSelectContact(user) {
+      this.$emit('select-contact', user)
+    },
   },
   watch: {
     user: {
@@ -45,7 +54,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/../sass/_variables';
+@import '~@s/_variables';
 
 .contacts {
   box-sizing: border-box;
@@ -65,5 +74,35 @@ export default {
   font-weight: bold;
   padding-bottom: 10px;
   padding-left: 35px;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px 10px 30px;
+  cursor: pointer;
+  transition: all .3s;
+  border-left: 5px solid transparent;
+  color: #5e6487;
+
+  &:hover {
+    border-color: #0e8bff;
+    background: linear-gradient(to right, #1a40ab, #2b346c);
+    color: #fff;
+  }
+}
+
+.avatar {
+  position: relative;
+}
+
+.online-indicate {
+  right: 0px;
+}
+
+.name {
+  margin-left: 10px;
+  font-weight: bold;
+  font-size: 14px;
 }
 </style>

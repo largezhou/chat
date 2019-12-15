@@ -10,7 +10,6 @@
         </div>
         <div v-if="user" class="header-item">
           <lz-button
-            id="user-context-btn"
             style="width: 35px; padding: 0px;"
             :action="onLogout"
           >
@@ -27,14 +26,16 @@
         </div>
       </div>
       <div class="main">
-        <contacts/>
+        <contacts @select-contact="onSelectContact"/>
         <div class="chat-main">
           <div class="recent-items">
-            <recent-contact-item
-              v-for="item of recentContacts"
-              :key="item.id"
-              :item="item"
-            />
+            <div class="recent-items-inner" ref="recentItemsInner">
+              <recent-contact-item
+                v-for="item of recentContacts"
+                :key="item.id"
+                :item="item"
+              />
+            </div>
           </div>
           <div class="dialog-main">
             <div class="dialog-header">
@@ -67,7 +68,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { jsonParse } from '@/libs/utils'
+import { jsonParse, showIn } from '@/libs/utils'
 import Cookie from 'js-cookie'
 import { getUserInfo } from '@/api'
 
@@ -75,47 +76,36 @@ export default {
   name: 'Index',
   data: () => ({
     loginModal: false,
-    userContextModal: true,
-    recentContacts: [
-      {
-        id: 1,
-        avatar: 'http://chat.l.com/uploads/61c1b32a961b0d868a78dae00e4997f9.png',
-        online: true,
-        name: '头上有灰机',
-        recent_content: '你好啊',
-        created_at: '刚刚',
-        unreads_count: 3,
-      },
-      {
-        id: 2,
-        avatar: 'http://chat.l.com/uploads/41abbcca9305be17900ecd62d852b733.jpg',
-        online: false,
-        name: '黑客帝国',
-        recent_content: '你好啊你好啊你好啊你好啊你好啊你好啊你好啊你好啊你好啊你好啊你好啊你好啊',
-        created_at: '10:10',
-        unreads_count: 0,
-      },
-      {
-        id: 3,
-        avatar: 'http://chat.l.com/uploads/5bcfe346bdb0b0a64c2d79eb25030f74.jpg',
-        online: true,
-        name: '守望者',
-        recent_content: 'Test test test test test test test test test test test test test test ',
-        created_at: '一天前',
-        unreads_count: 3,
-      },
-    ],
-    friends: [],
+    recentContacts: [],
   }),
   computed: {
     ...mapState({
       user: state => state.user,
     }),
+    recentIds() {
+      return this.recentContacts.map(i => i.id)
+    },
   },
   created() {
     // this.onStartChat()
   },
   methods: {
+    async onSelectContact(user) {
+      window.c = this.$refs.recentItemsInner
+      let i = this.recentIds.indexOf(user.id)
+      if (i === -1) {
+        i = 0
+        this.recentContacts.unshift(user)
+      }
+      // TODO 获取该与该用户的最近联系记录
+      this.$store.commit('SET_TARGET', user)
+
+      await this.$nextTick()
+      showIn(
+        this.$refs.recentItemsInner,
+        this.$refs.recentItemsInner.children[i],
+      )
+    },
     getUserInfo,
     async onLogout() {
       await this.$store.dispatch('logout')
@@ -203,13 +193,17 @@ export default {
     },
   },
   watch: {
-    user(newVal) {
+    user(user) {
       if (
-        newVal &&
+        user &&
         this.ws &&
         (this.ws.readyState === WebSocket.OPEN)
       ) {
         this.onAuthChat()
+      }
+
+      if (!user) {
+        this.recentContacts = []
       }
     },
   },
@@ -217,7 +211,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import '~@/../sass/_variables';
+@import '~@s/_variables';
 
 .index {
   position: absolute;
@@ -272,25 +266,32 @@ export default {
   width: 100%;
   background: #12152f;
   border-bottom-right-radius: $chat-radius;
-  position: relative;
   padding-bottom: 30px;
+  display: flex;
 }
 
 .recent-items {
-  position: absolute;
-  left: 0;
-  top: 0;
-  box-sizing: border-box;
   width: 300px;
   height: 100%;
-  padding: 20px 15px 20px 20px;
+  padding: 20px 0px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.recent-items-inner {
+  padding-left: 20px;
+  padding-right: 10px;
+  margin-right: -17px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 100%;
 }
 
 .dialog-main {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  padding: 0px 30px 0px 315px;
+  padding-right: 30px;
 }
 
 .dialog-header {

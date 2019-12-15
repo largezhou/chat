@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import { getPos, numToPixel } from '@/libs/utils'
+import { numToPixel } from '@/libs/utils'
 
 export default {
   name: 'Modal',
@@ -62,21 +62,21 @@ export default {
       const node = typeof this.attach === 'string'
         ? document.querySelector(this.attach)
         : this.attach
-      const pos = getPos(node)
+      const pos = node.getBoundingClientRect()
 
       for (const a of this.alignPos) {
         switch (a) {
           case 'right':
-            this.left = pos.x - this.$el.offsetWidth + node.offsetWidth
+            this.left = pos.left - this.$el.offsetWidth + node.offsetWidth
             break
           case 'top':
-            this.top = pos.y
+            this.top = pos.top
             break
           case 'left':
-            this.left = pos.x
+            this.left = pos.left
             break
           case 'bottom':
-            this.top = pos.y - this.$el.offsetHeight + node.offsetHeight
+            this.top = pos.top - this.$el.offsetHeight + node.offsetHeight
             break
           default:
           // do nothing
@@ -97,7 +97,7 @@ export default {
       this.$emit('shown')
     },
     onClickOutside() {
-      this.$emit('input', false)
+      this.value && this.$emit('input', false)
     },
     onAfterLeave() {
       this.clearPos()

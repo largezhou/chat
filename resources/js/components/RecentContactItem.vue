@@ -6,17 +6,24 @@
       </avatar>
     </div>
     <div class="name-msg">
-      <div class="name">{{ item.name }}</div>
+      <div class="name ellipsis">{{ item.name }}</div>
       <div class="msg">{{ item.recent_content }}</div>
     </div>
     <div class="time-unread">
-      <div class="time">{{ item.created_at }}</div>
+      <div class="time" :title="item.created_at">{{ fCreatedAt }}</div>
       <div class="unread" v-show="item.unreads_count">{{ item.unreads_count }}</div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import dayjs from 'dayjs'
+import 'dayjs/locale/zh-cn'
+
+dayjs.extend(require('dayjs/plugin/relativeTime'))
+  .locale('zh-cn')
+
 export default {
   name: 'RecentContactItem',
   props: {
@@ -24,20 +31,20 @@ export default {
   },
   computed: {
     cardStyles() {
-      const { active: a } = this.item
       return {
-        active: a,
+        active: this.target && (this.target.id === this.item.id),
       }
     },
-  },
-  created() {
-    this.$root.$on('recent-selected', (id) => {
-      this.$set(this.item, 'active', this.item.id === id)
-    })
+    fCreatedAt() {
+      return dayjs(this.item.created_at).fromNow()
+    },
+    ...mapState({
+      target: state => state.target,
+    }),
   },
   methods: {
     select() {
-      this.$root.$emit('recent-selected', this.item.id)
+      this.$store.commit('SET_TARGET', this.item)
     },
   },
 }
@@ -48,7 +55,7 @@ $card-radius: 6px;
 
 .recent-contact-item {
   display: flex;
-  width: 100%;
+  width: calc(100% - 20px);
   background: #191e3f;
   height: 96px;
   border-radius: $card-radius;
@@ -64,7 +71,7 @@ $card-radius: 6px;
   }
 
   &.active {
-    width: calc(100% + 20px);
+    width: 100%;
     background: linear-gradient(to right, #036fff, #16a1ff);
 
     .msg {
@@ -87,14 +94,15 @@ $card-radius: 6px;
 }
 
 .name-msg {
-  width: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   padding: 20px 0px;
 }
 
 .name {
   color: #fff;
+  flex-shrink: 0;
 }
 
 .msg {
@@ -109,7 +117,7 @@ $card-radius: 6px;
 }
 
 .time-unread {
-  width: 60px;
+  width: 70px;
   flex-shrink: 0;
   border-radius: $card-radius;
   display: flex;

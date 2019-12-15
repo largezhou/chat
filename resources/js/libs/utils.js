@@ -1,26 +1,4 @@
 /**
- * 获取元素相对于最左上角的坐标
- *
- * @param el
- * @returns {{x: number, y: number}}
- */
-export const getPos = el => {
-  let x = 0
-  let y = 0
-
-  do {
-    x += el.offsetLeft
-    y += el.offsetTop
-    el = el.offsetParent
-  } while (el)
-
-  return {
-    x: x - window.scrollX,
-    y: y - window.scrollY,
-  }
-}
-
-/**
  * 把值转成带像素单位的值
  *
  * @param num
@@ -74,4 +52,55 @@ export const jsonParse = (s, defaultVal = null) => {
   } catch (e) {
     return defaultVal
   }
+}
+
+let scrollToRequestId = {}
+/**
+ * 把 el 滚动到 top 的位置
+ *
+ * @param {Element} el
+ * @param {int} top
+ */
+export const scrollTo = (el, top) => {
+  // 先取消之前的，避免乱点导致混乱
+  scrollToRequestId[el] && cancelAnimationFrame(scrollToRequestId[el])
+  const offset = top - el.scrollTop
+  let speed = offset / Math.abs(offset) * 30
+  const step = () => {
+    el.scrollTop += speed
+
+    if (el.scrollTop !== top) {
+      scrollToRequestId[el] = requestAnimationFrame(step)
+    }
+  }
+
+  requestAnimationFrame(step)
+}
+
+/**
+ * 滚动 wrap 到正好显示 tar
+ *
+ * @param {Element} wrap
+ * @param {Element} tar
+ */
+export const showIn = (wrap, tar) => {
+  const tarRect = tar.getBoundingClientRect()
+  const wrapRect = wrap.getBoundingClientRect()
+  const { marginTop: mt, marginBottom: mb } = getComputedStyle(tar)
+  const tarTop = tarRect.top - wrapRect.top - parseInt(mt)
+
+  let top
+  if (tarTop < 0) {
+    top = 0
+  }
+
+  if ((tarTop + tarRect.height + parseInt(mt) + parseInt(mb)) > wrapRect.height) {
+    top = wrap.scrollHeight - wrapRect.height
+  }
+
+  if (top === undefined) {
+    return
+  }
+
+  scrollTo(wrap, top)
 }
