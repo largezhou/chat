@@ -69,6 +69,7 @@
 import { mapState } from 'vuex'
 import { jsonParse } from '@/libs/utils'
 import Cookie from 'js-cookie'
+import { getUserInfo } from '@/api'
 
 export default {
   name: 'Index',
@@ -115,6 +116,7 @@ export default {
     // this.onStartChat()
   },
   methods: {
+    getUserInfo,
     async onLogout() {
       await this.$store.dispatch('logout')
     },

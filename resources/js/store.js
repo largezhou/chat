@@ -18,7 +18,6 @@ export default new Vuex.Store({
     async logout({ commit }) {
       await postLogout()
       commit('SET_USER', null)
-      location.href = '/'
     },
   },
   getters: {

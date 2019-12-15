@@ -34,6 +34,10 @@ class EventServiceProvider extends ServiceProvider
         \Illuminate\Auth\Events\OtherDeviceLogout::class => [
             \App\Listeners\DispatchOtherLogoutToWS::class,
         ],
+
+        \Illuminate\Auth\Events\Logout::class => [
+            \App\Listeners\DispatchLogoutToWS::class,
+        ],
     ];
 
     /**

@@ -39,6 +39,7 @@ class LoginController extends Controller
 
     public function loggedOut(Request $request)
     {
+        $request->session()->regenerate();
         return response(null, 204);
     }
 }
