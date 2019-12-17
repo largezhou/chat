@@ -54,9 +54,9 @@ export default {
     async onLogin() {
       this.errors = {}
       try {
-        const { data } = await postLogin(this.form)
-        this.$store.commit('SET_USER', data)
+        await postLogin(this.form)
         this.$emit('input', false)
+        location.reload()
       } catch (e) {
         const res = e.response
         if (res.status === 422 || res.status === 429) {

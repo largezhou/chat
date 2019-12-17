@@ -10,7 +10,11 @@
   <link href="{{ mix('css/app.css') }}" rel="stylesheet">
 </head>
 <body>
-<div id="app" data-user='@json(\Auth::user())'>
+<div
+  id="app"
+  data-user='@json(\Auth::user())'
+  data-config='@json(\App\Services\ConfigService::basic())'
+>
   <main>
     @yield('content')
   </main>

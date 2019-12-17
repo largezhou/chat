@@ -3,10 +3,18 @@ module.exports = {
   env: {
     node: true,
   },
-  'extends': [
+  extends: [
     'plugin:vue/strongly-recommended',
     '@vue/standard',
   ],
+  parserOptions: {
+    parser: 'babel-eslint',
+  },
+  globals: {
+    log: 'readonly',
+    chat: 'readonly',
+    ChatClient: 'readonly',
+  },
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
@@ -45,8 +53,5 @@ module.exports = {
     ],
     'vue/singleline-html-element-content-newline': 'off',
     'vue/require-default-prop': 'off',
-  },
-  parserOptions: {
-    parser: 'babel-eslint',
   },
 }

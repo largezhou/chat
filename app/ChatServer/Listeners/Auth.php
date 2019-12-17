@@ -3,6 +3,7 @@
 namespace App\ChatServer\Listeners;
 
 use App\ChatServer\Events\Event;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Auth as LAuth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Session;
@@ -18,7 +19,7 @@ class Auth
      */
     public function handle($event)
     {
-        $this->startSession($event->data());
+        $this->startSession($event->data() ?: '');
 
         $fd = $event->fd();
 
@@ -27,10 +28,19 @@ class Auth
             ($user = LAuth::getProvider()->retrieveById($userId)) &&
             $user->password == Session::get('password_hash')
         ) {
-            $event->clients()->set($fd, [
+            $users = $event->users();
+            $clients = $event->clients();
+
+            $oldFd = $users->get($userId, 'fd');
+            if ($oldFd && ($oldFd != $fd)) {
+                $clients->set($oldFd, ['user_id' => 0]);
+                $event->ws->push($oldFd, Event::OTHER_LOGGED_IN);
+            }
+
+            $clients->set($fd, [
                 'user_id' => $userId,
             ]);
-            $event->users()->set($userId, [
+            $users->set($userId, [
                 'fd' => $fd,
                 'session_id' => Session::getId(),
             ]);
@@ -43,7 +53,10 @@ class Auth
 
     protected function startSession(string $key)
     {
-        Session::setId(Crypt::decrypt($key, false));
+        try {
+            Session::setId(Crypt::decrypt($key, false));
+        } catch (DecryptException $e) {
+        }
         Session::flush();
         Session::start();
     }

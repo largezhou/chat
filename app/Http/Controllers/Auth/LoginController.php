@@ -25,9 +25,6 @@ class LoginController extends Controller
     protected function authenticated(Request $request, $user)
     {
         Auth::logoutOtherDevices($request->input('password'));
-        $request->session()->put([
-            'password_hash' => $user->password,
-        ]);
 
         return response()->json($user);
     }
@@ -39,7 +36,6 @@ class LoginController extends Controller
 
     public function loggedOut(Request $request)
     {
-        $request->session()->regenerate();
         return response(null, 204);
     }
 }

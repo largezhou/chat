@@ -23,7 +23,7 @@ class WebSocketServer
     /**
      * @var \Illuminate\Console\Command
      */
-    protected $console;
+    public $console;
     protected $events = [
         'start', 'message', 'open', 'close', 'workerStart', 'task',
     ];
@@ -109,6 +109,18 @@ class WebSocketServer
 
     protected function onStart(Server $server)
     {
+        Timer::tick(2000, function () {
+            $clients = [];
+            foreach ($this->clients as $i => $row) {
+                $clients[$i] = $row;
+            }
+            $users = [];
+            foreach ($this->users as $i => $row) {
+                $users[$i] = $row;
+            }
+            dump(compact('clients', 'users'));
+        });
+
         $this->startLaravelQueueWorkTask($server);
 
         $this->console->info("已启动：{$server->host}:{$server->port}");
@@ -125,7 +137,12 @@ class WebSocketServer
     {
         $type = $this->data($frame->data)['type'];
         $eventClass = '\\App\\ChatServer\\Events\\'.Str::studly($type);
-        event(new $eventClass($this, $frame));
+
+        if (!class_exists($eventClass)) {
+            $this->console->error("[ {$type} ] 事件不存在");
+        } else {
+            event(new $eventClass($this, $frame));
+        }
     }
 
     protected function onOpen(Server $server, Request $request)

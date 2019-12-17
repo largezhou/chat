@@ -6,7 +6,6 @@
         <div class="flex-spacer"/>
         <div class="header-item">
           <lz-button @click="onStartChat">我要聊天</lz-button>
-          <lz-button @click="onAuthChat">认证</lz-button>
         </div>
         <div v-if="user" class="header-item">
           <lz-button
@@ -68,8 +67,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { jsonParse, showIn } from '@/libs/utils'
-import Cookie from 'js-cookie'
+import { showIn } from '@/libs/utils'
 import { getUserInfo } from '@/api'
 
 export default {
@@ -87,7 +85,27 @@ export default {
     },
   },
   created() {
-    // this.onStartChat()
+    chat.addHandler(ChatClient.OTHER_LOGGED_IN, () => {
+      location.reload()
+    })
+    let lastCount
+    window.onlineCount = (client, data) => {
+      const now = Date.now() / 1000
+
+      let interval = lastCount ? (now - lastCount) : 0
+      lastCount = now
+      log(`当前在线人数：${data} (interval ${Math.round(interval)})`)
+    }
+    chat.addHandler(ChatClient.ONLINE_COUNT, onlineCount)
+    let lastPong
+    chat.addHandler(ChatClient.PONG, (client) => {
+      const now = Date.now() / 1000
+
+      let interval = lastPong ? (now - lastPong) : 0
+      lastPong = now
+
+      log(`pong (interval ${Math.round(interval)})`)
+    })
   },
   methods: {
     async onSelectContact(user) {
@@ -111,100 +129,7 @@ export default {
       await this.$store.dispatch('logout')
     },
     onStartChat() {
-      this.reconnectTimes = 3
-      this.intervals = {}
-      this.connectWS()
-    },
-    encode(type, data) {
-      return JSON.stringify({ type, data })
-    },
-    connectWS() {
-      this.ws = new WebSocket('ws://chat.l.com:9501')
-
-      this.ws.addEventListener('open', e => {
-        this.clearInterval('reconnectInterval')
-
-        this.intervals.WSOnlineCountInterval = setInterval(() => {
-          this.ws.send(this.encode('online_count'))
-        }, 10 * 1000)
-
-        this.user && this.ws.send(this.encode('auth', Cookie.get('laravel_session')))
-      })
-
-      this.ws.addEventListener('message', e => {
-        const { data, type } = jsonParse(e.data)
-
-        switch (type) {
-          case 'connected':
-            this.intervals.WSPingInterval = setInterval(() => {
-              this.ws.send(this.encode('ping'))
-            }, data.interval * 1000)
-            break
-          case 'online_count':
-            log('当前在线人数：', data)
-            break
-          case 'other_logged_in':
-            // location.reload()
-            break
-          default:
-          // do nothing
-        }
-      })
-
-      this.ws.addEventListener('close', e => {
-        log('close: ', e);
-        ['WSPingInterval', 'WSOnlineCountInterval'].forEach(i => {
-          this.clearInterval(i)
-        })
-
-        if ([4000, 4001].indexOf(e.code) !== -1) {
-          log(e.reason)
-          return
-        }
-
-        this.reconnectWS(e)
-      })
-
-      this.ws.addEventListener('error', e => {
-        log('error: ', e)
-        this.reconnectWS(e)
-      })
-
-      window.ws = this.ws
-    },
-    reconnectWS(e) {
-      if (this.intervals.reconnectInterval) {
-        log('already in reconnecting...')
-        return
-      }
-
-      log('go reconnect')
-      this.connectWS()
-      this.intervals.reconnectInterval = setInterval(this.connectWS, 5000)
-    },
-    clearInterval(key) {
-      if (this.intervals[key]) {
-        clearInterval(this.intervals[key])
-        this.intervals[key] = null
-      }
-    },
-    onAuthChat() {
-      this.ws.send(this.encode('auth', Cookie.get('laravel_session')))
-    },
-  },
-  watch: {
-    user(user) {
-      if (
-        user &&
-        this.ws &&
-        (this.ws.readyState === WebSocket.OPEN)
-      ) {
-        this.onAuthChat()
-      }
-
-      if (!user) {
-        this.recentContacts = []
-      }
+      log(chat.connect())
     },
   },
 }
