@@ -48,9 +48,15 @@ class ChatClient {
 
   static get AUTH() { return 'auth' }
 
+  static get ONLINE_FRIEND_IDS() { return 'online_friend_ids' }
+
   static get CLOSED_MANUALLY_CODE() { return 4000 }
 
   static get CLOSED_MANUALLY() { return 'closed_manually' }
+
+  static get FRIEND_ONLINE() { return 'friend_online' }
+
+  static get FRIEND_OFFLINE() { return 'friend_offline' }
 
   static #ins
 
@@ -128,8 +134,7 @@ class ChatClient {
   }
 
   #sendOnlineCount() {
-    if (this.isConnected()) {
-      this.send(ChatClient.ONLINE_COUNT)
+    if (this.send(ChatClient.ONLINE_COUNT)) {
       setTimeout(this.#sendOnlineCount.bind(this), 5 * 1000)
     }
   }
@@ -137,8 +142,7 @@ class ChatClient {
   #connectedHandler(client, data) {
     const sendPing = () => {
       setTimeout(() => {
-        if (this.isConnected()) {
-          this.send(ChatClient.PING)
+        if (this.send(ChatClient.PING)) {
           sendPing()
         }
       }, data.interval * 1000)
@@ -160,6 +164,8 @@ class ChatClient {
   }
 
   #onClose(e) {
+    store.commit('SET_ONLINE_FRIEND_IDS', [])
+
     const { code, reason } = e
     if (code === ChatClient.CLOSED_MANUALLY_CODE) {
       console.log(reason)
@@ -185,10 +191,15 @@ class ChatClient {
   }
 
   send(type, data) {
+    if (!this.isConnected()) {
+      return false
+    }
     this.#ws.send(JSON.stringify({
       type,
       data,
     }))
+
+    return true
   }
 
   data(strData) {
@@ -230,6 +241,10 @@ class ChatClient {
       )
       this.#ws = null
     }
+  }
+
+  ws() {
+    return this.#ws
   }
 }
 

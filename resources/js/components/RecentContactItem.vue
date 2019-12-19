@@ -2,7 +2,7 @@
   <div class="recent-contact-item" :class="cardStyles" @click="select">
     <div class="avatar-item">
       <avatar :avatar="item.avatar">
-        <div class="online-indicate" :class="{ off: !item.online }"/>
+        <online-indicate :id="item.id"/>
       </avatar>
     </div>
     <div class="name-msg">

@@ -41,7 +41,7 @@
               <avatar avatar="http://chat.l.com/uploads/61c1b32a961b0d868a78dae00e4997f9.png" size="60px"/>
               <div class="target-name">
                 <span>头上有灰机</span>
-                <span class="online-indicate"/>
+                <online-indicate/>
               </div>
               <div class="flex-spacer"/>
               <span style="color: #fff;">好友</span>
@@ -230,12 +230,11 @@ export default {
   color: #fff;
   position: relative;
   padding: 0px 0px 16px 8px;
-}
 
-.online-indicate {
-  position: absolute;
-  right: -20px;
-  width: 10px;
-  height: 10px;
+  ::v-deep .online-indicate {
+    right: -20px;
+    width: 10px;
+    height: 10px;
+  }
 }
 </style>

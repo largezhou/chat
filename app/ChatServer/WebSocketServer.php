@@ -6,6 +6,7 @@ use App\ChatServer\Events\Event;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Swoole\Http\Request;
 use Swoole\Table;
@@ -16,6 +17,7 @@ use Swoole\WebSocket\Server;
 class WebSocketServer
 {
     const MAX_LARAVEL_QUEUE_WORKER = 4;
+    const PID_FILE = __DIR__.'/ws.pid';
     /**
      * @var \Swoole\WebSocket\Server
      */
@@ -74,6 +76,7 @@ class WebSocketServer
             'heartbeat_check_interval' => $config['interval'],
             'heartbeat_idle_time' => $config['timeout'],
             'log_file' => storage_path('logs/chat_server.log'),
+            'pid_file' => self::PID_FILE,
         ]);
 
         $this->createClientsTable();
@@ -109,18 +112,6 @@ class WebSocketServer
 
     protected function onStart(Server $server)
     {
-        Timer::tick(2000, function () {
-            $clients = [];
-            foreach ($this->clients as $i => $row) {
-                $clients[$i] = $row;
-            }
-            $users = [];
-            foreach ($this->users as $i => $row) {
-                $users[$i] = $row;
-            }
-            dump(compact('clients', 'users'));
-        });
-
         $this->startLaravelQueueWorkTask($server);
 
         $this->console->info("已启动：{$server->host}:{$server->port}");
@@ -167,6 +158,7 @@ class WebSocketServer
 
     public function start()
     {
+        $this->cleans();
         $this->server->start();
     }
 
@@ -211,5 +203,11 @@ class WebSocketServer
     public function data(string $data): array
     {
         return Data::decode($data);
+    }
+
+    protected function cleans()
+    {
+        DB::disableQueryLog();
+        DB::disconnect();
     }
 }

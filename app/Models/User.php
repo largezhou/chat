@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Admin\Traits\ModelHelpers;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -68,10 +69,49 @@ class User extends Authenticatable
 
     /**
      * 所有朋友
+     *
+     * @param bool $onlyAccepted
+     *
      * @return Collection|static[]
      */
-    public function friends(): Collection
+    public function friends(bool $onlyAccepted = true): Collection
     {
-        return $this->friendsOfMine->merge($this->friendsOf);
+        $mine = $this->friendsOfMine();
+        $other = $this->friendsOf();
+
+        if ($onlyAccepted) {
+            $mine->wherePivot('accepted', true);
+            $other->wherePivot('accepted', true);
+        }
+
+        return $mine->get()->merge($other->get());
+    }
+
+    /**
+     * 所有朋友的 id
+     *
+     * @param boolean $onlyAccepted
+     *
+     * @return array|int[]
+     */
+    public function friendIds(bool $onlyAccepted = true): array
+    {
+        $records = UserFriend::query()
+            ->when($onlyAccepted, function (Builder $query) {
+                $query->where('accepted', true);
+            })
+            ->where(function (Builder $query) {
+                $query->where('friend_id', $this->id)
+                    ->orWhere('user_id', $this->id);
+            })
+            ->pluck('user_id', 'friend_id');
+
+        return $records
+            ->merge($records->keys())
+            ->filter(function ($i) {
+                return $i != $this->id;
+            })
+            ->values()
+            ->toArray();
     }
 }

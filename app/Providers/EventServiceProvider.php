@@ -29,6 +29,7 @@ class EventServiceProvider extends ServiceProvider
 
         \App\ChatServer\Events\Auth::class => [
             \App\ChatServer\Listeners\Auth::class,
+            \App\ChatServer\Listeners\OnlineFriendIds::class,
         ],
 
         \Illuminate\Auth\Events\OtherDeviceLogout::class => [

@@ -13,6 +13,9 @@ abstract class Event
     const ONLINE_COUNT = 'online_count';
     const OTHER_LOGGED_IN = 'other_logged_in';
     const AUTH = 'auth';
+    const ONLINE_FRIEND_IDS = 'online_friend_ids';
+    const FRIEND_ONLINE = 'friend_online';
+    const FRIEND_OFFLINE = 'friend_offline';
     /**
      * @var \App\ChatServer\WebSocketServer
      */

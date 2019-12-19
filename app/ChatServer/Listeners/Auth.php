@@ -2,6 +2,7 @@
 
 namespace App\ChatServer\Listeners;
 
+use App\ChatServer\Events\Auth as AuthEvent;
 use App\ChatServer\Events\Event;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Auth as LAuth;
@@ -13,11 +14,11 @@ class Auth
     /**
      * Handle the event.
      *
-     * @param \App\ChatServer\Events\Event $event
+     * @param \App\ChatServer\Events\Auth $event
      *
      * @return void
      */
-    public function handle($event)
+    public function handle(AuthEvent $event)
     {
         $this->startSession($event->data() ?: '');
 

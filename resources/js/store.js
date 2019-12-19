@@ -24,6 +24,10 @@ export default new Vuex.Store({
      * 配置
      */
     config: getData('config'),
+    /**
+     * 当前在线好友的 id
+     */
+    onlineFriendIds: [],
   },
   mutations: {
     SET_USER(state, user) {
@@ -31,6 +35,9 @@ export default new Vuex.Store({
     },
     SET_TARGET(state, target) {
       state.target = target
+    },
+    SET_ONLINE_FRIEND_IDS(state, ids) {
+      state.onlineFriendIds = ids
     },
   },
   actions: {
@@ -45,6 +52,17 @@ export default new Vuex.Store({
       }
 
       location.reload()
+    },
+    addOnlineFriendId({ state, commit }, id) {
+      commit('SET_ONLINE_FRIEND_IDS', [...(new Set([...state.onlineFriendIds, id]))])
+    },
+    removeOnlineFriendId({ state, commit }, id) {
+      const t = [...state.onlineFriendIds]
+      const i = t.indexOf(id)
+      if (i !== -1) {
+        t.splice(i, 1)
+        commit('SET_ONLINE_FRIEND_IDS', t)
+      }
     },
   },
   getters: {

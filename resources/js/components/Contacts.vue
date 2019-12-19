@@ -8,7 +8,7 @@
       @click="onSelectContact(user)"
     >
       <avatar class="avatar" :avatar="user.avatar" size="35px">
-        <div class="online-indicate" :class="{ off: !user.online }"/>
+        <online-indicate style="right: 0px;" :id="user.id"/>
       </avatar>
       <span class="name ellipsis">{{ user.name }}</span>
     </div>
@@ -27,27 +27,21 @@ export default {
   computed: {
     ...mapState({
       user: state => state.user,
+      onlineFriendIds: state => state.onlineFriendIds,
     }),
+  },
+  created() {
+    this.getUserFriends()
   },
   methods: {
     async getUserFriends() {
-      const { data } = await getUserFriends()
-      this.friends = data || []
+      if (this.user) {
+        const { data } = await getUserFriends()
+        this.friends = data || []
+      }
     },
     onSelectContact(user) {
       this.$emit('select-contact', user)
-    },
-  },
-  watch: {
-    user: {
-      handler(user) {
-        if (user) {
-          this.getUserFriends()
-        } else {
-          this.friends = []
-        }
-      },
-      immediate: true,
     },
   },
 }
@@ -94,10 +88,6 @@ export default {
 
 .avatar {
   position: relative;
-}
-
-.online-indicate {
-  right: 0px;
 }
 
 .name {
