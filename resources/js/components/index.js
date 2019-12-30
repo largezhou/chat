@@ -13,6 +13,7 @@ import LzInput from '@c/LzInput'
 import LzButton from '@c/LzButton'
 import Contacts from '@c/Contacts'
 import OnlineIndicate from '@c/OnlineIndicate'
+import Editor from '@c/Editor'
 
 Vue.component('Index', Index)
 Vue.component('RecentContactItem', RecentContactItem)
@@ -26,3 +27,4 @@ Vue.component('LzInput', LzInput)
 Vue.component('LzButton', LzButton)
 Vue.component('Contacts', Contacts)
 Vue.component('OnlineIndicate', OnlineIndicate)
+Vue.component('Editor', Editor)

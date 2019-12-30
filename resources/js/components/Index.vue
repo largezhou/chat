@@ -36,12 +36,12 @@
               />
             </div>
           </div>
-          <div class="dialog-main">
+          <div v-if="true || target" class="dialog-main">
             <div class="dialog-header">
-              <avatar avatar="http://chat.l.com/uploads/61c1b32a961b0d868a78dae00e4997f9.png" size="60px"/>
+              <avatar :avatar="target && target.avatar" size="60px"/>
               <div class="target-name">
-                <span>头上有灰机</span>
-                <online-indicate/>
+                <span>{{ target && target.name }}</span>
+                <online-indicate :id="target && target.id"/>
               </div>
               <div class="flex-spacer"/>
               <span style="color: #fff;">好友</span>
@@ -51,6 +51,15 @@
               <dialog-item me/>
               <dialog-item/>
               <dialog-item me/>
+              <dialog-item/>
+              <dialog-item me/>
+            </div>
+            <div class="msg-input-main">
+              <editor
+                class="msg-input"
+                v-model="msg"
+                @send="onSend"
+              />
             </div>
           </div>
         </div>
@@ -75,37 +84,16 @@ export default {
   data: () => ({
     loginModal: false,
     recentContacts: [],
+    msg: '',
   }),
   computed: {
     ...mapState({
       user: state => state.user,
+      target: state => state.target,
     }),
     recentIds() {
       return this.recentContacts.map(i => i.id)
     },
-  },
-  created() {
-    chat.addHandler(ChatClient.OTHER_LOGGED_IN, () => {
-      location.reload()
-    })
-    let lastCount
-    window.onlineCount = (client, data) => {
-      const now = Date.now() / 1000
-
-      let interval = lastCount ? (now - lastCount) : 0
-      lastCount = now
-      log(`当前在线人数：${data} (interval ${Math.round(interval)})`)
-    }
-    chat.addHandler(ChatClient.ONLINE_COUNT, onlineCount)
-    let lastPong
-    chat.addHandler(ChatClient.PONG, (client) => {
-      const now = Date.now() / 1000
-
-      let interval = lastPong ? (now - lastPong) : 0
-      lastPong = now
-
-      log(`pong (interval ${Math.round(interval)})`)
-    })
   },
   methods: {
     async onSelectContact(user) {
@@ -130,6 +118,10 @@ export default {
     },
     onStartChat() {
       log(chat.connect())
+    },
+    onSend(content) {
+      const data = chat.sendMsg(this.target.id, content)
+      log(data)
     },
   },
 }
@@ -216,7 +208,8 @@ export default {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  padding-right: 30px;
+  display: flex;
+  flex-direction: column;
 }
 
 .dialog-header {
@@ -224,6 +217,20 @@ export default {
   height: 90px;
   border-bottom: 1px solid #293055;
   align-items: center;
+  flex-shrink: 0;
+}
+
+.dialog-items {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  height: calc(100% - 90px - 100px);
+  margin-right: -17px;
+  padding-right: 30px;
+}
+
+.msg-input-main {
+  height: 100px;
+  margin: 20px 30px 0px 0px;
 }
 
 .target-name {

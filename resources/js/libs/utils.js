@@ -1,3 +1,19 @@
+import _trim from 'lodash/trim'
+import store from '@/store'
+
+export default (Vue, options) => {
+  // 需要放到 vue 实例中的方法名
+  const methods = {
+    url,
+  }
+
+  Object.keys(methods).forEach(key => {
+    const m = methods[key]
+    Vue[key] = m
+    Vue.prototype[key] = m
+  })
+}
+
 /**
  * 把值转成带像素单位的值
  *
@@ -103,4 +119,48 @@ export const showIn = (wrap, tar) => {
   }
 
   scrollTo(wrap, top)
+}
+
+/**
+ * 返回 path 的全地址
+ *
+ * @param {string} path
+ * @returns {string}
+ */
+export const url = path => {
+  if (!path) {
+    return ''
+  }
+
+  if (path.startsWith('http')) {
+    return path
+  }
+
+  return _trim(store.getters.getConfig('cdn_domain'), '/') + '/' + _trim(path)
+}
+
+/**
+ * 产生随机字符串
+ * @return {string}
+ */
+export const randomChars = () => Math.random().toString(36).substring(7)
+
+/**
+ * 图片转 base64
+ * @param {File} image
+ * @return {Promise<string>}
+ */
+export const imgToBase64 = async image => {
+  const reader = new FileReader()
+  return new Promise((resolve, reject) => {
+    reader.onload = e => {
+      resolve(e.target.result)
+    }
+
+    reader.onerror = e => {
+      reject(e)
+    }
+
+    reader.readAsDataURL(image)
+  })
 }

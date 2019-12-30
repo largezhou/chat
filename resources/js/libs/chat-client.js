@@ -1,5 +1,5 @@
 import Cookie from 'js-cookie'
-import { jsonParse } from '@/libs/utils'
+import { jsonParse, randomChars } from '@/libs/utils'
 import store from '@/store'
 
 const config = store.state.config
@@ -57,6 +57,8 @@ class ChatClient {
   static get FRIEND_ONLINE() { return 'friend_online' }
 
   static get FRIEND_OFFLINE() { return 'friend_offline' }
+
+  static get MSG() { return 'msg' }
 
   static #ins
 
@@ -139,7 +141,7 @@ class ChatClient {
     }
   }
 
-  #connectedHandler(client, data) {
+  #connectedHandler(data, client) {
     const sendPing = () => {
       setTimeout(() => {
         if (this.send(ChatClient.PING)) {
@@ -159,7 +161,7 @@ class ChatClient {
     const { type, data } = this.data(e.data)
     const handlers = this.#messageHandlers[type] || []
     handlers.forEach(cb => {
-      cb(this, data)
+      cb(data, this)
     })
   }
 
@@ -245,6 +247,18 @@ class ChatClient {
 
   ws() {
     return this.#ws
+  }
+
+  sendMsg(target, content) {
+    const data = {
+      key: randomChars(),
+      target,
+      content,
+    }
+
+    this.send(ChatClient.MSG, data)
+
+    return data
   }
 }
 

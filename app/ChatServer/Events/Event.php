@@ -16,6 +16,8 @@ abstract class Event
     const ONLINE_FRIEND_IDS = 'online_friend_ids';
     const FRIEND_ONLINE = 'friend_online';
     const FRIEND_OFFLINE = 'friend_offline';
+    const MSG_FAILED = 'msg_failed';
+    const MSG = 'msg';
     /**
      * @var \App\ChatServer\WebSocketServer
      */

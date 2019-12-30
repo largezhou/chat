@@ -39,6 +39,10 @@ class EventServiceProvider extends ServiceProvider
         \Illuminate\Auth\Events\Logout::class => [
             \App\Listeners\DispatchLogoutToWS::class,
         ],
+
+        \App\ChatServer\Events\Msg::class => [
+            \App\ChatServer\Listeners\HandleMsg::class,
+        ],
     ];
 
     /**

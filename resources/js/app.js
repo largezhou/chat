@@ -5,6 +5,8 @@ import '@/components'
 import '@/directives'
 import store from '@/store'
 
+Vue.use(require('@/libs/utils').default)
+
 const app = new Vue({
   store,
   el: '#app',

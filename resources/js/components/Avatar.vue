@@ -1,6 +1,6 @@
 <template>
   <div class="avatar" :style="styles">
-    <img :src="avatar">
+    <img :src="url(avatar)">
     <slot/>
   </div>
 </template>
