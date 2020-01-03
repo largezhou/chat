@@ -4,8 +4,8 @@ namespace App\Admin\Controllers;
 
 use App\Admin\Filters\UserFilter;
 use App\Admin\Requests\UserRequest;
-use App\Admin\Resources\UserFriendResource;
-use App\Admin\Resources\UserResource;
+use App\Http\Resources\UserFriendResource;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\UserFriend;
 use Illuminate\Http\Request;

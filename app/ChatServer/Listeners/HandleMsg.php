@@ -4,11 +4,9 @@ namespace App\ChatServer\Listeners;
 
 use App\ChatServer\Events\Event;
 use App\Models\Msg;
-use App\Models\User;
 use App\Models\UserFriend;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class HandleMsg
 {
@@ -53,7 +51,7 @@ class HandleMsg
 
         $targetId = $data['target'] ?? null;
         if (!UserFriend::isFriend($userId, $targetId)) {
-            $this->failed('你们还不是好友。');
+            $this->response('你们还不是好友。');
             return;
         }
 
@@ -64,6 +62,8 @@ class HandleMsg
             'target_id' => $targetId,
             'content' => $content,
         ]);
+
+        $this->response();
 
         if ($targetFd = $event->users()->get($targetId, 'fd')) {
             $event->ws->push($targetFd, Event::MSG, $msg);
@@ -79,18 +79,21 @@ class HandleMsg
             ['content' => '消息内容']
         );
         if ($v->fails()) {
-            $this->failed($v->getMessageBag()->first('content'));
+            $this->response($v->getMessageBag()->first('content'));
             return false;
         }
 
         return true;
     }
 
-    protected function failed(string $error)
+    /**
+     * @param string|null $error 没有错误，表示消息发送成功
+     */
+    protected function response(string $error = null)
     {
         $e = $this->event;
 
-        $e->ws->push($e->fd(), Event::MSG_FAILED, [
+        $e->ws->push($e->fd(), Event::MSG_RES, [
             'key' => $e->data()['key'] ?? null,
             'error' => $error,
         ]);
@@ -98,14 +101,22 @@ class HandleMsg
 
     protected function handleImages(array $content): array
     {
-        return array_map(function ($i) {
-            return Str::startsWith($i, 'data:image')
-                ? [
-                    'type' => 'image',
-                    'data' => $this->saveImage($i),
-                ]
-                : $i;
-        }, $content);
+        $t = [];
+        foreach ($content as $i) {
+            if (is_string($i)) {
+                $t[] = $i;
+            } elseif (isset($i['type']) && isset($i['data'])) {
+                $t[] = [
+                    'type' => $i['type'],
+                    'data' => $this->saveImage($i['data']),
+                ];
+            } else {
+                // 丢弃不规范的值
+                continue;
+            }
+        }
+
+        return $t;
     }
 
     protected function saveImage(string $base64): string

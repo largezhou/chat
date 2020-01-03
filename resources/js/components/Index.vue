@@ -36,32 +36,7 @@
               />
             </div>
           </div>
-          <div v-if="true || target" class="dialog-main">
-            <div class="dialog-header">
-              <avatar :avatar="target && target.avatar" size="60px"/>
-              <div class="target-name">
-                <span>{{ target && target.name }}</span>
-                <online-indicate :id="target && target.id"/>
-              </div>
-              <div class="flex-spacer"/>
-              <span style="color: #fff;">好友</span>
-            </div>
-            <div class="dialog-items">
-              <dialog-item/>
-              <dialog-item me/>
-              <dialog-item/>
-              <dialog-item me/>
-              <dialog-item/>
-              <dialog-item me/>
-            </div>
-            <div class="msg-input-main">
-              <editor
-                class="msg-input"
-                v-model="msg"
-                @send="onSend"
-              />
-            </div>
-          </div>
+          <chat-main/>
         </div>
       </div>
     </div>
@@ -84,12 +59,10 @@ export default {
   data: () => ({
     loginModal: false,
     recentContacts: [],
-    msg: '',
   }),
   computed: {
     ...mapState({
       user: state => state.user,
-      target: state => state.target,
     }),
     recentIds() {
       return this.recentContacts.map(i => i.id)
@@ -118,10 +91,6 @@ export default {
     },
     onStartChat() {
       log(chat.connect())
-    },
-    onSend(content) {
-      const data = chat.sendMsg(this.target.id, content)
-      log(data)
     },
   },
 }
@@ -202,46 +171,5 @@ export default {
   overflow-y: scroll;
   overflow-x: hidden;
   height: 100%;
-}
-
-.dialog-main {
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-}
-
-.dialog-header {
-  display: flex;
-  height: 90px;
-  border-bottom: 1px solid #293055;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.dialog-items {
-  overflow-x: hidden;
-  overflow-y: scroll;
-  height: calc(100% - 90px - 100px);
-  margin-right: -17px;
-  padding-right: 30px;
-}
-
-.msg-input-main {
-  height: 100px;
-  margin: 20px 30px 0px 0px;
-}
-
-.target-name {
-  color: #fff;
-  position: relative;
-  padding: 0px 0px 16px 8px;
-
-  ::v-deep .online-indicate {
-    right: -20px;
-    width: 10px;
-    height: 10px;
-  }
 }
 </style>

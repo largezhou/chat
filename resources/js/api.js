@@ -15,3 +15,7 @@ export const postLogout = () => {
 export const getUserFriends = () => {
   return axios.get('/user/friends')
 }
+
+export const getFriendsMsgs = id => {
+  return axios.get(`/user/friends/${id}/msgs`)
+}

@@ -1,10 +1,16 @@
 import _trim from 'lodash/trim'
 import store from '@/store'
+import _dayjs from 'dayjs'
+import 'dayjs/locale/zh-cn'
+
+_dayjs.extend(require('dayjs/plugin/relativeTime'))
+  .locale('zh-cn')
 
 export default (Vue, options) => {
   // 需要放到 vue 实例中的方法名
   const methods = {
     url,
+    dayjs,
   }
 
   Object.keys(methods).forEach(key => {
@@ -76,16 +82,24 @@ let scrollToRequestId = {}
  *
  * @param {Element} el
  * @param {int} top
+ * @param {int} speed 正整数
  */
-export const scrollTo = (el, top) => {
+export const scrollTo = (el, top, speed = 30) => {
   // 先取消之前的，避免乱点导致混乱
   scrollToRequestId[el] && cancelAnimationFrame(scrollToRequestId[el])
+
   const offset = top - el.scrollTop
-  let speed = offset / Math.abs(offset) * 30
+  if (!offset) {
+    return
+  }
+
+  const sign = offset / Math.abs(offset)
+  speed *= sign
+
   const step = () => {
     el.scrollTop += speed
 
-    if (el.scrollTop !== top) {
+    if (sign * el.scrollTop < sign * top) {
       scrollToRequestId[el] = requestAnimationFrame(step)
     }
   }
@@ -163,4 +177,22 @@ export const imgToBase64 = async image => {
 
     reader.readAsDataURL(image)
   })
+}
+
+export const dayjs = function () {
+  return _dayjs.apply(dayjs, arguments)
+}
+
+/**
+ * vuex 中存储两人的对话键，按两人 id 顺序加 短横线 连接
+ * @param {int} id1
+ * @param {int} id2
+ * @return {string}
+ */
+export const makeDialogKey = (id1, id2) => {
+  if (id1 > id2) {
+    [id1, id2] = [id2, id1]
+  }
+
+  return id1 + '-' + id2
 }

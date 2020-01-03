@@ -1,20 +1,89 @@
 <template>
   <div class="dialog-item" :class="{ me }">
-    <avatar avatar="http://chat.l.com/uploads/61c1b32a961b0d868a78dae00e4997f9.png"/>
+    <avatar :avatar="(me ? user : target).avatar"/>
     <div class="content-main">
-      <div class="content">
-        你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢你说啥呢
-      </div>
-      <span class="time">17:24</span>
+      <div ref="content" class="content" v-html="contentHTML"/>
+      <from-now class="time" :time="this.msg.created_at"/>
+      <transition name="status-out">
+        <span
+          v-if="msg.status"
+          class="status"
+          :title="error"
+        >
+          <component :is="statusIcon"/>
+        </span>
+      </transition>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { MSG_STATUS } from '@/libs/constants'
+
 export default {
+  inject: ['chatMain'],
   name: 'DialogItem',
   props: {
-    me: Boolean,
+    msg: Object,
+  },
+  computed: {
+    ...mapState({
+      user: state => state.user,
+      target: state => state.target,
+    }),
+    me() {
+      return this.msg.user_id === this.user.id
+    },
+    contentHTML() {
+      return this.msg.content.map(i => {
+        if (typeof i === 'string') {
+          return i.replace(/\n/g, '<br>')
+        } else if (i.type === 'image') {
+          return `<img src="${i.data}"/>`
+        } else {
+          return ''
+        }
+      }).join('')
+    },
+    statusIcon() {
+      return `svg-msg-${this.msg.status}`
+    },
+    error() {
+      return this.msg.status === MSG_STATUS.FAILED
+        ? this.msg.error
+        : ''
+    },
+  },
+  mounted() {
+    setTimeout(() => {
+      if (this.msg.status === MSG_STATUS.PENDING) {
+        this.msg.status = MSG_STATUS.FAILED
+        this.$set(this.msg, 'error', '发送失败。')
+      }
+    }, 5 * 1000)
+
+    this.initImgLoadedEvent()
+  },
+  methods: {
+    initImgLoadedEvent() {
+      this.$refs.content.querySelectorAll('img').forEach(i => {
+        i.addEventListener('load', () => {
+          this.chatMain.scrollToBottom()
+        })
+      })
+    },
+  },
+  watch: {
+    'msg.status'(newVal) {
+      // 如果消息的状态变为发送成功，则在一小段时间后，让图标消失
+      if (newVal === MSG_STATUS.OK) {
+        setTimeout(() => {
+          this.msg.status = null
+          this.$store.commit('REMOVE_KEY_MSG_MAP', this.msg.key)
+        }, 1000)
+      }
+    },
   },
 }
 </script>
@@ -34,6 +103,7 @@ $dialog-radius: 15px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  position: relative;
 }
 
 .content {
@@ -44,12 +114,35 @@ $dialog-radius: 15px;
   border-radius: $dialog-radius;
   box-shadow: 0 0 20px 8px #000;
   padding: 16px;
+  word-break: break-all;
+
+  ::v-deep {
+    img {
+      max-width: 200px;
+      max-height: 200px;
+    }
+  }
 }
 
 .time {
   font-size: 12px;
   color: #5e6e86;
   margin-top: 10px;
+}
+
+.status {
+  position: absolute;
+  top: 5px;
+  right: -25px;
+  width: 20px;
+  height: 20px;
+}
+
+.me {
+  .status {
+    left: -25px;
+    right: initial;
+  }
 }
 
 .dialog-item {
@@ -74,5 +167,13 @@ $dialog-radius: 15px;
       border-top-left-radius: 0px;
     }
   }
+}
+
+.status-out-leave-active {
+  transition: opacity .5s;
+}
+
+.status-out-leave-to {
+  opacity: 0;
 }
 </style>

@@ -3,7 +3,7 @@
 namespace App\Admin\Controllers;
 
 use App\Admin\Filters\UserFriendFilter;
-use App\Admin\Resources\UserFriendResource;
+use App\Http\Resources\UserFriendResource;
 use App\Models\UserFriend;
 use Illuminate\Http\Request;
 

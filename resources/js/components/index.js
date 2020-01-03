@@ -14,6 +14,8 @@ import LzButton from '@c/LzButton'
 import Contacts from '@c/Contacts'
 import OnlineIndicate from '@c/OnlineIndicate'
 import Editor from '@c/Editor'
+import ChatMain from '@c/ChatMain'
+import FromNow from '@c/FromNow'
 
 Vue.component('Index', Index)
 Vue.component('RecentContactItem', RecentContactItem)
@@ -28,3 +30,5 @@ Vue.component('LzButton', LzButton)
 Vue.component('Contacts', Contacts)
 Vue.component('OnlineIndicate', OnlineIndicate)
 Vue.component('Editor', Editor)
+Vue.component('ChatMain', ChatMain)
+Vue.component('FromNow', FromNow)

@@ -10,7 +10,7 @@
       <div class="msg">{{ item.recent_content }}</div>
     </div>
     <div class="time-unread">
-      <div class="time" :title="item.created_at">{{ fCreatedAt }}</div>
+      <from-now class="time" :time="this.item.created_at"/>
       <div class="unread" v-show="item.unreads_count">{{ item.unreads_count }}</div>
     </div>
   </div>
@@ -34,9 +34,6 @@ export default {
       return {
         active: this.target && (this.target.id === this.item.id),
       }
-    },
-    fCreatedAt() {
-      return dayjs(this.item.created_at).fromNow()
     },
     ...mapState({
       target: state => state.target,
@@ -94,6 +91,7 @@ $card-radius: 6px;
 }
 
 .name-msg {
+  width: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -106,6 +104,7 @@ $card-radius: 6px;
 }
 
 .msg {
+  word-break: break-all;
   color: #5f6688;
   font-size: 13px;
   height: 100%;

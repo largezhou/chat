@@ -60,6 +60,8 @@ class ChatClient {
 
   static get MSG() { return 'msg' }
 
+  static get MSG_RES() { return 'msg_res' }
+
   static #ins
 
   constructor() {
@@ -247,18 +249,6 @@ class ChatClient {
 
   ws() {
     return this.#ws
-  }
-
-  sendMsg(target, content) {
-    const data = {
-      key: randomChars(),
-      target,
-      content,
-    }
-
-    this.send(ChatClient.MSG, data)
-
-    return data
   }
 }
 

@@ -8,9 +8,10 @@
       @paste="onPaste"
       @mousewheel="onMousewheel"
       :innerHTML.prop="value"
+      @keydown.enter.ctrl="onSend"
     />
     <div v-if="!value" class="placeholder">开始吧~~</div>
-    <lz-button class="send" @click="onSend">
+    <lz-button class="send" title="Ctrl + Enter 发送" @click="onSend">
       <svg-send/>
     </lz-button>
   </div>
@@ -117,6 +118,8 @@ export default {
               break
             default:
               newValue = i.textContent
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
           }
 
           if (newValue) {
@@ -134,10 +137,15 @@ export default {
       // 拼接连续的字符串值，并把 base64 的单独出来
       const t = []
       let cur = ''
+      let pureContent = ''
       for (let i of value) {
+        pureContent += i
         if (i.startsWith('data:image')) {
           cur && t.push(cur)
-          t.push(i)
+          t.push({
+            type: 'image',
+            data: i,
+          })
           cur = ''
         } else {
           cur += i
@@ -146,19 +154,25 @@ export default {
 
       cur && t.push(cur)
 
-      return t
+      return {
+        content: t,
+        pureContent,
+      }
     },
     async onSend() {
-      const content = await this.formatValue()
-      const l = content.join('').length
-      if (l > 2 * 1024 * 1024) {
+      const { content, pureContent } = await this.formatValue()
+      if (pureContent.length > 2 * 1024 * 1024) {
         alert('消息内容 不能超过 2M 啊。')
         return
       }
-      if (!l) {
+      if (!pureContent.trim()) {
+        alert('空的，发啥呢？')
         return
       }
       this.$emit('send', content)
+    },
+    focus() {
+      this.$refs.editor.focus()
     },
   },
 }
@@ -179,6 +193,7 @@ export default {
   position: absolute;
   padding: 15px 75px 15px 15px;
   overflow: hidden;
+  word-break: break-all;
 
   ::v-deep img {
     max-width: 200px;
