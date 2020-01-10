@@ -41,7 +41,7 @@ export default {
       }
     },
     onSelectContact(user) {
-      this.$emit('select-contact', user)
+      this.$store.commit('SET_TARGET', user)
     },
   },
 }

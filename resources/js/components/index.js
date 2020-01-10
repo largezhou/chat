@@ -1,34 +1,20 @@
 import Vue from 'vue'
 
 import './svg'
-import Index from './Index.vue'
-import RecentContactItem from './RecentContactItem'
-import Avatar from './Avatar'
-import DialogItem from './DialogItem'
-import Modal from './Modal'
-import LoginModal from './LoginModal'
-import LzForm from './LzForm'
-import FormItem from './FormItem'
-import LzInput from '@c/LzInput'
-import LzButton from '@c/LzButton'
-import Contacts from '@c/Contacts'
-import OnlineIndicate from '@c/OnlineIndicate'
-import Editor from '@c/Editor'
-import ChatMain from '@c/ChatMain'
-import FromNow from '@c/FromNow'
 
-Vue.component('Index', Index)
-Vue.component('RecentContactItem', RecentContactItem)
-Vue.component('Avatar', Avatar)
-Vue.component('DialogItem', DialogItem)
-Vue.component('Modal', Modal)
-Vue.component('LoginModal', LoginModal)
-Vue.component('LzForm', LzForm)
-Vue.component('FormItem', FormItem)
-Vue.component('LzInput', LzInput)
-Vue.component('LzButton', LzButton)
-Vue.component('Contacts', Contacts)
-Vue.component('OnlineIndicate', OnlineIndicate)
-Vue.component('Editor', Editor)
-Vue.component('ChatMain', ChatMain)
-Vue.component('FromNow', FromNow)
+Vue.component('Index', require('./Index.vue').default)
+Vue.component('RecentContactItem', require('./RecentContactItem').default)
+Vue.component('Avatar', require('./Avatar').default)
+Vue.component('DialogItem', require('./DialogItem').default)
+Vue.component('Modal', require('./Modal').default)
+Vue.component('LoginModal', require('./LoginModal').default)
+Vue.component('LzForm', require('./LzForm').default)
+Vue.component('FormItem', require('./FormItem').default)
+Vue.component('LzInput', require('./LzInput').default)
+Vue.component('LzButton', require('./LzButton').default)
+Vue.component('Contacts', require('./Contacts').default)
+Vue.component('OnlineIndicate', require('./OnlineIndicate').default)
+Vue.component('Editor', require('./Editor').default)
+Vue.component('ChatMain', require('./ChatMain').default)
+Vue.component('FromNow', require('./FromNow').default)
+Vue.component('RecentContacts', require('./RecentContacts').default)

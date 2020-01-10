@@ -179,6 +179,8 @@ return [
 
         App\Admin\AdminServiceProvider::class,
 
+        App\Providers\ModelEventServiceProvider::class,
+
     ],
 
     /*

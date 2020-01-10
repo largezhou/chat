@@ -4,6 +4,7 @@ namespace App\ChatServer\Listeners;
 
 use App\ChatServer\Events\Event;
 use App\Models\User;
+use App\Models\UserFriend;
 
 class OnlineFriendIds
 {
@@ -27,9 +28,7 @@ class OnlineFriendIds
             $onlineUserIds[] = (int) $i;
         }
 
-        $friendIds = User::query()
-            ->find($userId)
-            ->friendIds();
+        $friendIds = UserFriend::friendIdsOf($userId);
 
         $onlineFriendIds = array_values(array_intersect($onlineUserIds, $friendIds));
 

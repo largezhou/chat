@@ -1,28 +1,23 @@
 <template>
   <div class="recent-contact-item" :class="cardStyles" @click="select">
     <div class="avatar-item">
-      <avatar :avatar="item.avatar">
-        <online-indicate :id="item.id"/>
+      <avatar :avatar="item.target.avatar">
+        <online-indicate :id="item.target_id"/>
       </avatar>
     </div>
     <div class="name-msg">
-      <div class="name ellipsis">{{ item.name }}</div>
-      <div class="msg">{{ item.recent_content }}</div>
+      <div class="name ellipsis">{{ item.target.name }}</div>
+      <div class="msg">{{ item.msg }}</div>
     </div>
     <div class="time-unread">
-      <from-now class="time" :time="this.item.created_at"/>
-      <div class="unread" v-show="item.unreads_count">{{ item.unreads_count }}</div>
+      <from-now class="time" :time="this.item.updated_at"/>
+      <div class="unread" v-show="item.unread">{{ item.unread }}</div>
     </div>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import dayjs from 'dayjs'
-import 'dayjs/locale/zh-cn'
-
-dayjs.extend(require('dayjs/plugin/relativeTime'))
-  .locale('zh-cn')
 
 export default {
   name: 'RecentContactItem',
@@ -32,7 +27,7 @@ export default {
   computed: {
     cardStyles() {
       return {
-        active: this.target && (this.target.id === this.item.id),
+        active: this.target && (this.target.id === this.item.target_id),
       }
     },
     ...mapState({
@@ -41,7 +36,8 @@ export default {
   },
   methods: {
     select() {
-      this.$store.commit('SET_TARGET', this.item)
+      this.$set(this.item, 'unread', 0)
+      this.$store.commit('SET_TARGET', this.item.target)
     },
   },
 }

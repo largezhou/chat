@@ -5,7 +5,7 @@ namespace App\Traits;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * @method static|\Illuminate\Database\Eloquent\Builder bothUsers($userId, $targetId, $userField = 'user_id', $targetField = 'target_id')
+ * @method $this|\Illuminate\Database\Eloquent\Builder bothUsers(int $userId, int $targetId, string $userField = 'user_id', string $targetField = 'target_id')
  */
 trait BothUsers
 {
@@ -20,7 +20,7 @@ trait BothUsers
      * @param string $userField
      * @param string $targetField
      *
-     * @return static|\Illuminate\Database\Eloquent\Builder
+     * @return $this|\Illuminate\Database\Eloquent\Builder
      */
     public function scopeBothUsers(
         Builder $builder,
@@ -28,7 +28,7 @@ trait BothUsers
         int $targetId,
         string $userField = 'user_id',
         string $targetField = 'target_id'
-    ) {
+    ): Builder {
         return $builder->where(function (Builder $builder) use ($userId, $targetId, $userField, $targetField) {
             $builder
                 ->where([

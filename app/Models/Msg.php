@@ -5,13 +5,14 @@ namespace App\Models;
 use App\Traits\BothUsers;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class Msg extends Model
 {
     use BothUsers;
     public const UPDATED_AT = null;
-    public const MAX_GET_MSGS_COUNT = 50;
+    public const MAX_GET_COUNT = 50;
     public $incrementing = false;
     protected $primaryKey = 'uuid';
     protected $keyType = 'string';
@@ -61,6 +62,28 @@ class Msg extends Model
             })
             ->bothUsers($userId, $targetId, 'user_id', 'target_id')
             ->orderByDesc('id')
-            ->paginate(static::MAX_GET_MSGS_COUNT);
+            ->paginate(static::MAX_GET_COUNT);
+    }
+
+    /**
+     * @param int $userId
+     * @param int $targetId
+     * @param array $content
+     *
+     * @return $this
+     */
+    public static function storeMsg(int $userId, int $targetId, array $content)
+    {
+        DB::beginTransaction();
+
+        $msg = Msg::create([
+            'user_id' => $userId,
+            'target_id' => $targetId,
+            'content' => $content,
+        ]);
+
+        DB::commit();
+
+        return $msg;
     }
 }

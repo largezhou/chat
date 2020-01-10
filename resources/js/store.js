@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import { postLogout } from '@/api'
 import _get from 'lodash/get'
 import { jsonParse } from '@/libs/utils'
-import { MSG_STATUS } from '@/libs/constants'
+import { MSG_STATUS, MAX_MSGS_COUNT } from '@/libs/constants'
 
 Vue.use(Vuex)
 
@@ -42,6 +42,11 @@ const store = new Vuex.Store({
      * 每 2 秒改变一次值
      */
     ticker2: Date.now(),
+    /**
+     * 最近的消息
+     * @var {{targetId, msg}|null}
+     */
+    recentContact: null,
   },
   mutations: {
     SET_USER(state, user) {
@@ -59,6 +64,9 @@ const store = new Vuex.Store({
       }
 
       state.dialogs[key].push(msg)
+      if (state.dialogs[key].length > MAX_MSGS_COUNT) {
+        state.dialogs[key].shift()
+      }
     },
     SET_KEY_MSG_MAP(state, msg) {
       state.keyMsgMap[msg.key] = msg
@@ -68,6 +76,9 @@ const store = new Vuex.Store({
     },
     SET_DIALOGS(state, { key, dialogs }) {
       Vue.set(state.dialogs, key, dialogs)
+    },
+    SET_RECENT_CONTACT(state, payload) {
+      state.recentContact = payload
     },
   },
   actions: {

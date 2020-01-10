@@ -28,4 +28,8 @@ chat.addHandler(ChatClient.MSG, (data, client) => {
     key: makeDialogKey(data.user_id, data.target_id),
     msg: data,
   })
+  store.commit('SET_RECENT_CONTACT', {
+    targetId: data.user_id,
+    msg: data.content_text,
+  })
 })

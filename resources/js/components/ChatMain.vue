@@ -29,7 +29,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { makeDialogKey, randomChars } from '@/libs/utils'
+import { getContentText, makeDialogKey, randomChars } from '@/libs/utils'
 import { MSG_STATUS } from '@/libs/constants'
 import { getFriendsMsgs } from '@/api'
 
@@ -86,6 +86,10 @@ export default {
       })
 
       this.$store.commit('SET_KEY_MSG_MAP', msg)
+      this.$store.commit('SET_RECENT_CONTACT', {
+        targetId: this.target.id,
+        msg: getContentText(content),
+      })
 
       this.msg = ''
       this.$refs.editor.focus()
@@ -113,7 +117,7 @@ export default {
       }
     },
     async target(newVal) {
-      if (newVal && this.dialogs.length === 0) {
+      if (newVal && !this.$store.state.dialogs[this.dialogKey]) {
         const { data } = await getFriendsMsgs(this.target.id)
         this.$store.commit('SET_DIALOGS', {
           key: this.dialogKey,

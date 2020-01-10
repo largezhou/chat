@@ -5,6 +5,7 @@ namespace App\ChatServer\Listeners;
 use App\ChatServer\Events\Event;
 use App\Models\Msg;
 use App\Models\UserFriend;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -57,11 +58,7 @@ class HandleMsg
 
         $content = $this->handleImages($data['content']);
 
-        $msg = Msg::create([
-            'user_id' => $userId,
-            'target_id' => $targetId,
-            'content' => $content,
-        ]);
+        $msg = Msg::storeMsg($userId, $targetId, $content);
 
         $this->response();
 

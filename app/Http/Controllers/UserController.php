@@ -3,12 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Admin\Traits\RestfulResponse;
+use App\Http\Requests\RecentContactRequest;
 use App\Http\Resources\MsgResource;
+use App\Http\Resources\RecentContactResource;
 use App\Http\Resources\UserResource;
 use App\Models\Msg;
+use App\Models\RecentContact;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -38,5 +43,23 @@ class UserController extends Controller
         );
 
         return $this->ok(MsgResource::collection($msgs));
+    }
+
+    public function getRecentContacts(RecentContact $contact)
+    {
+        $contacts = RecentContact::getContactsBy(Auth::id());
+
+        return $this->ok(RecentContactResource::collection($contacts));
+    }
+
+    public function storeRecentContacts(RecentContactRequest $request)
+    {
+        $contact = RecentContact::updateOrCreate(
+            [
+                'user_id' => Auth::id(),
+                'target_id' => $request->input('target_id'),
+            ]
+        )->load(['target']);
+        return $this->ok(RecentContactResource::make($contact));
     }
 }

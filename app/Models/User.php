@@ -86,32 +86,4 @@ class User extends Authenticatable
 
         return $mine->get()->merge($other->get());
     }
-
-    /**
-     * 所有朋友的 id
-     *
-     * @param boolean $onlyAccepted
-     *
-     * @return array|int[]
-     */
-    public function friendIds(bool $onlyAccepted = true): array
-    {
-        $records = UserFriend::query()
-            ->when($onlyAccepted, function (Builder $query) {
-                $query->where('accepted', true);
-            })
-            ->where(function (Builder $query) {
-                $query->where('friend_id', $this->id)
-                    ->orWhere('user_id', $this->id);
-            })
-            ->pluck('user_id', 'friend_id');
-
-        return $records
-            ->merge($records->keys())
-            ->filter(function ($i) {
-                return $i != $this->id;
-            })
-            ->values()
-            ->toArray();
-    }
 }

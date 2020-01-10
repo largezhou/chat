@@ -4,6 +4,8 @@ module.exports.MSG_STATUS = {
   FAILED: 'failed',
 }
 
+module.exports.MAX_MSGS_COUNT = 50
+
 const freeze = obj => {
   Object.freeze(obj)
   Object.getOwnPropertyNames(obj).forEach(key => {

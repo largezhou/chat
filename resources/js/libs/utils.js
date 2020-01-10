@@ -196,3 +196,17 @@ export const makeDialogKey = (id1, id2) => {
 
   return id1 + '-' + id2
 }
+
+/**
+ * 获取消息内容的纯文本
+ *
+ * @param {array} content 原始的消息内容数组
+ * @return {string}
+ */
+export const getContentText = content => {
+  return content.reduce((carry, i) => {
+    return typeof i === 'string'
+      ? carry + i
+      : carry
+  }, '').trim()
+}

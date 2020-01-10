@@ -25,17 +25,9 @@
         </div>
       </div>
       <div class="main">
-        <contacts @select-contact="onSelectContact"/>
+        <contacts/>
         <div class="chat-main">
-          <div class="recent-items">
-            <div class="recent-items-inner" ref="recentItemsInner">
-              <recent-contact-item
-                v-for="item of recentContacts"
-                :key="item.id"
-                :item="item"
-              />
-            </div>
-          </div>
+          <recent-contacts/>
           <chat-main/>
         </div>
       </div>
@@ -51,40 +43,21 @@
 
 <script>
 import { mapState } from 'vuex'
-import { showIn } from '@/libs/utils'
 import { getUserInfo } from '@/api'
+import RecentContacts from '@c/RecentContacts'
 
 export default {
   name: 'Index',
+  components: { RecentContacts },
   data: () => ({
     loginModal: false,
-    recentContacts: [],
   }),
   computed: {
     ...mapState({
       user: state => state.user,
     }),
-    recentIds() {
-      return this.recentContacts.map(i => i.id)
-    },
   },
   methods: {
-    async onSelectContact(user) {
-      window.c = this.$refs.recentItemsInner
-      let i = this.recentIds.indexOf(user.id)
-      if (i === -1) {
-        i = 0
-        this.recentContacts.unshift(user)
-      }
-      // TODO 获取该与该用户的最近联系记录
-      this.$store.commit('SET_TARGET', user)
-
-      await this.$nextTick()
-      showIn(
-        this.$refs.recentItemsInner,
-        this.$refs.recentItemsInner.children[i],
-      )
-    },
     getUserInfo,
     async onLogout() {
       await this.$store.dispatch('logout')
@@ -154,22 +127,5 @@ export default {
   border-bottom-right-radius: $chat-radius;
   padding-bottom: 30px;
   display: flex;
-}
-
-.recent-items {
-  width: 300px;
-  height: 100%;
-  padding: 20px 0px;
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.recent-items-inner {
-  padding-left: 20px;
-  padding-right: 10px;
-  margin-right: -17px;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  height: 100%;
 }
 </style>
