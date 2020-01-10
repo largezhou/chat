@@ -6,11 +6,11 @@ use App\ChatServer\Events\Event;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Swoole\Http\Request;
 use Swoole\Table;
-use Swoole\Timer;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;
 
@@ -158,7 +158,6 @@ class WebSocketServer
 
     public function start()
     {
-        $this->cleans();
         $this->server->start();
     }
 
@@ -179,7 +178,8 @@ class WebSocketServer
 
     protected function onWorkerStart(Server $server, int $workerId)
     {
-        $this->console->info("{$workerId} 号开工了");
+        $this->cleans();
+        $this->console->info("{$workerId} 号 worker 开工了");
     }
 
     protected function onTask(Server $server, int $taskId, int $fromId, string $data)
@@ -209,5 +209,9 @@ class WebSocketServer
     {
         DB::disableQueryLog();
         DB::disconnect();
+
+        // 之前一直用 Redis::close()， 发现还是会报错。
+        // 后来看源码，发现缓存中用到的 redis 实例，是自己新建的，并不是从容器中获取的
+        Cache::getStore()->connection()->close();
     }
 }
