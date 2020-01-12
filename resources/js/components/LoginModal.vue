@@ -11,7 +11,7 @@
       :errors.sync="errors"
       @enter-submit="onSubmit"
     >
-      <div class="title">登录</div>
+      <div class="title">登录<span class="sub-title">新用户自动注册</span></div>
       <form-item prop="username">
         <lz-input
           v-model="form.username"
@@ -54,7 +54,10 @@ export default {
     async onLogin() {
       this.errors = {}
       try {
-        await postLogin(this.form)
+        const { data } = await postLogin(this.form)
+        if (data.password) {
+          alert(`注册成功，密码为：[ ${data.password} ]`)
+        }
         this.$emit('input', false)
         location.reload()
       } catch (e) {
@@ -67,6 +70,7 @@ export default {
       }
     },
     onHidden() {
+      this.form = {}
       this.$refs.form.reset()
     },
     onSubmit() {
@@ -89,6 +93,13 @@ export default {
   text-align: left;
   width: 100%;
   font-weight: 700;
+
+  .sub-title {
+    font-size: 12px;
+    color: #c1c1c1;
+    font-weight: initial;
+    margin-left: 10px;
+  }
 }
 
 .login-btn {

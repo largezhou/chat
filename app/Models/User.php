@@ -32,12 +32,14 @@ class User extends Authenticatable
         'password',
     ];
 
-    public static function createUser($inputs)
+    protected static function boot()
     {
-        $inputs = array_merge($inputs, [
-            'password' => Hash::make($inputs['password']),
-        ]);
-        return static::create($inputs);
+        parent::boot();
+
+        static::creating(function (self $user) {
+            $user->name = $user->name ?: $user->username;
+            $user->password = Hash::make($user->password);
+        });
     }
 
     public function updateUser($inputs)

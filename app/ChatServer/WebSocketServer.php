@@ -178,7 +178,7 @@ class WebSocketServer
 
     protected function onWorkerStart(Server $server, int $workerId)
     {
-        $this->cleans();
+        $this->clean();
         $this->console->info("{$workerId} 号 worker 开工了");
     }
 
@@ -205,7 +205,7 @@ class WebSocketServer
         return Data::decode($data);
     }
 
-    protected function cleans()
+    protected function clean()
     {
         DB::disableQueryLog();
         DB::disconnect();
