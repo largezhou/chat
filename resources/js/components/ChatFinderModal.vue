@@ -28,8 +28,10 @@
           </div>
         </div>
       </div>
-      <div v-else-if="showSearching" class="searching"><svg-ripple /></div>
-      <div v-else-if="showEmpty" class="empty">空空如也~</div>
+      <div v-show="showSearching" class="searching">
+        <svg-ripple/>
+      </div>
+      <div v-show="showEmpty" class="empty">空空如也~</div>
     </div>
   </modal>
 </template>
@@ -47,23 +49,37 @@ export default {
   }),
   created() {
     this.debounceGetUsers = _debounce(async () => {
-      const { data } = await getUsers(this.q.trim())
-      this.items = data
-      this.searching = false
+      try {
+        const { data } = await getUsers(this.q.trim())
+        this.items = data
+      } finally {
+        this.searching = false
+      }
     }, 300)
   },
   computed: {
+    /**
+     * 正在搜索，且列表为空
+     */
     showSearching() {
-      return this.searching && this.showEmpty
+      return this.searching && (this.items.length === 0)
     },
+    /**
+     * 有搜索关键词，但是没有搜到任何东西
+     */
     showEmpty() {
-      return Boolean(this.q.trim() && this.items.length === 0)
+      return Boolean(
+        this.q.trim() &&
+        (this.items.length === 0) &&
+        !this.searching,
+      )
     },
   },
   methods: {
     async onAdd(item) {
       await storeUserFriend(item.id)
       this.$set(item, 'applied', true)
+      alert('已申请。')
     },
   },
   watch: {
