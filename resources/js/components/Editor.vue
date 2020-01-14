@@ -11,9 +11,13 @@
       @keydown.enter.ctrl="onSend"
     />
     <div v-if="!value" class="placeholder">开始吧~~</div>
-    <lz-button class="send" title="Ctrl + Enter 发送" @click="onSend">
-      <svg-send/>
-    </lz-button>
+    <lz-button
+      class="send"
+      title="Ctrl + Enter 发送"
+      @click="onSend"
+      icon="svg-send"
+      icon-size="16px"
+    />
   </div>
 </template>
 
@@ -213,7 +217,6 @@ export default {
 .send {
   position: absolute;
   padding: 0 10px;
-  font-size: 16px;
   right: 20px;
   top: 8px;
 }

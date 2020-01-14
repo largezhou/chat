@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Request;
  *
  * Trait ModelHelpers
  * @package App\Admin\Traits
+ * @method $this|\Illuminate\Database\Eloquent\Builder filter(Filter $filter)
  */
 trait ModelHelpers
 {
@@ -38,9 +39,9 @@ trait ModelHelpers
      * @param Builder $builder
      * @param Filter $filter
      *
-     * @return mixed
+     * @return $this|\Illuminate\Database\Eloquent\Builder
      */
-    public function scopeFilter(Builder $builder, Filter $filter)
+    public function scopeFilter(Builder $builder, Filter $filter): Builder
     {
         return $filter->apply($builder);
     }

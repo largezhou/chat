@@ -117,10 +117,11 @@ export default {
       }
     },
     async target(newVal) {
-      if (newVal && !this.$store.state.dialogs[this.dialogKey]) {
+      const key = this.dialogKey
+      if (newVal && !this.$store.state.dialogs[key]) {
         const { data } = await getFriendsMsgs(this.target.id)
         this.$store.commit('SET_DIALOGS', {
-          key: this.dialogKey,
+          key,
           dialogs: data.data.reverse(),
         })
       }

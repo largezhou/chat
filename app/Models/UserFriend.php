@@ -15,7 +15,17 @@ class UserFriend extends Model
 {
     use BothUsers;
     use ModelHelpers;
+    /**
+     * 最小申请好友间隔时间，单位：天
+     */
+    public const MIN_APPLY_INTERVAL = 1;
+
     protected $table = 'user_friend';
+
+    protected $fillable = [
+        'user_id', 'friend_id', 'accepted',
+    ];
+
     protected $casts = [
         'accepted' => 'bool',
     ];

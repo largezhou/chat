@@ -1,15 +1,16 @@
 <template>
   <button
     class="btn"
-    :class="{ loading, disabled }"
+    :class="{ loading, disabled, icon }"
     v-bind="$attrs"
     v-on="$listeners"
     :disabled="!active"
     :type="type"
     @click="onClick"
   >
-    <svg-ripple v-if="loading"/>
-    <span v-else-if="$slots.default"><slot/></span>
+    <svg-ripple class="loading" v-if="loading"/>
+    <component v-else-if="icon" :is="icon" :style="{ width: iconSize }"/>
+    <slot v-else/>
   </button>
 </template>
 
@@ -29,6 +30,11 @@ export default {
     disableOnSuccess: {
       type: [String, Number],
       default: 500,
+    },
+    icon: String,
+    iconSize: {
+      type: String,
+      default: '35px',
     },
   },
   computed: {
@@ -104,6 +110,15 @@ export default {
 
   &.disabled {
     cursor: not-allowed;
+  }
+
+  &.icon {
+    width: 35px;
+    padding: 0;
+  }
+
+  .loading {
+    width: 35px;
   }
 }
 </style>

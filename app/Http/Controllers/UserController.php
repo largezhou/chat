@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Admin\Traits\RestfulResponse;
+use App\Http\Filters\UserFilter;
 use App\Http\Requests\RecentContactRequest;
 use App\Http\Resources\MsgResource;
 use App\Http\Resources\RecentContactResource;
@@ -12,8 +13,6 @@ use App\Models\RecentContact;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -61,5 +60,18 @@ class UserController extends Controller
             ]
         )->load(['target']);
         return $this->ok(RecentContactResource::make($contact));
+    }
+
+    public function index(UserFilter $filter)
+    {
+        $userId = Auth::id();
+
+        $users = User::query()
+            ->where('id', '<>', $userId)
+            ->isNotFriend($userId)
+            ->filter($filter->only(['q']))
+            ->get();
+
+        return $this->ok(UserResource::collection($users));
     }
 }

@@ -7,14 +7,22 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
+/**
+ * Class User
+ * @package App\Models
+ * @method $this|\Illuminate\Database\Eloquent\Builder isNotFriend(int $userId)
+ */
 class User extends Authenticatable
 {
     use Notifiable;
     use ModelHelpers;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -23,6 +31,7 @@ class User extends Authenticatable
     protected $fillable = [
         'username', 'name', 'avatar', 'password',
     ];
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -87,5 +96,26 @@ class User extends Authenticatable
         }
 
         return $mine->get()->merge($other->get());
+    }
+
+    /**
+     * 不是朋友筛选
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $builder
+     * @param int $userId
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeIsNotFriend(Builder $builder, int $userId): Builder
+    {
+        return $builder->whereNotExists(function (QueryBuilder $query) use ($userId) {
+            $query->select(DB::raw(1))
+                ->from('user_friend', 'uf')
+                ->where('accepted', true)
+                ->where(function (QueryBuilder $query) use ($userId) {
+                    $query->whereRaw('(uf.user_id = users.id AND uf.friend_id = ?)', [$userId])
+                        ->orWhereRaw('(uf.friend_id = users.id AND uf.user_id = ?)', [$userId]);
+                });
+        });
     }
 }

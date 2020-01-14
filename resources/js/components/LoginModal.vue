@@ -3,15 +3,18 @@
     v-bind="$attrs"
     v-on="$listeners"
     @hidden="onHidden"
+    class="login-modal"
+    width="185px"
   >
+    <template #title>登录</template>
+    <template #sub-title>新用户自动注册</template>
+
     <lz-form
       ref="form"
-      class="login-form"
       autocomplete="off"
       :errors.sync="errors"
       @enter-submit="onSubmit"
     >
-      <div class="title">登录<span class="sub-title">新用户自动注册</span></div>
       <form-item prop="username">
         <lz-input
           v-model="form.username"
@@ -81,27 +84,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.login-form {
-  width: 185px;
-  padding: 20px;
-}
-
-.title {
-  color: #fff;
-  font-size: 18px;
-  padding-bottom: 26px;
-  text-align: left;
-  width: 100%;
-  font-weight: 700;
-
-  .sub-title {
-    font-size: 12px;
-    color: #c1c1c1;
-    font-weight: initial;
-    margin-left: 10px;
-  }
-}
-
 .login-btn {
   margin-top: 16px;
 }

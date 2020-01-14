@@ -27,3 +27,11 @@ export const getRecentContacts = () => {
 export const storeRecentContact = targetId => {
   return axios.post('/user/recent-contacts', { target_id: targetId })
 }
+
+export const storeUserFriend = friendId => {
+  return axios.post('/user-friends', { friend_id: friendId })
+}
+
+export const getUsers = q => {
+  return axios.get('/users', { params: { q } })
+}

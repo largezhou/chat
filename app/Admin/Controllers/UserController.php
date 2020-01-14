@@ -2,7 +2,7 @@
 
 namespace App\Admin\Controllers;
 
-use App\Admin\Filters\UserFilter;
+use App\Http\Filters\UserFilter;
 use App\Admin\Requests\UserRequest;
 use App\Http\Resources\UserFriendResource;
 use App\Http\Resources\UserResource;

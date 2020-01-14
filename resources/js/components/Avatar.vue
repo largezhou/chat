@@ -1,6 +1,7 @@
 <template>
   <div class="avatar" :style="styles">
-    <img :src="url(avatar)">
+    <img v-if="avatar" :src="url(avatar)">
+    <svg-avatar v-else/>
     <slot/>
   </div>
 </template>

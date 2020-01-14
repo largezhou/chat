@@ -146,7 +146,7 @@ export const url = path => {
     return ''
   }
 
-  if (path.startsWith('http')) {
+  if (path.startsWith('http') || path.startsWith('data:image')) {
     return path
   }
 

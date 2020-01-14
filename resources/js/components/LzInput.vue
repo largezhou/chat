@@ -10,7 +10,11 @@
 
 <script>
 export default {
-  inject: ['formItem'],
+  inject: {
+    formItem: {
+      default: null,
+    },
+  },
   name: 'LzInput',
   props: {
     value: [String, Number],
@@ -21,7 +25,7 @@ export default {
     noSubmit: Boolean,
   },
   mounted() {
-    this.formItem.registerInput(this)
+    this.formItem && this.formItem.registerInput(this)
   },
   methods: {
     onInput(e) {

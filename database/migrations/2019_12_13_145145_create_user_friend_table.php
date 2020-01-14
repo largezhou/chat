@@ -18,7 +18,7 @@ class CreateUserFriendTable extends Migration
             $table->bigInteger('user_id');
             $table->bigInteger('friend_id');
             $table->boolean('accepted')->default(false);
-            $table->timestamp('created_at')->nullable()->useCurrent();
+            $table->timestamps();
         });
     }
 

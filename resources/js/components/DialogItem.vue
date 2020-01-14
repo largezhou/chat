@@ -40,7 +40,7 @@ export default {
         if (typeof i === 'string') {
           return i.replace(/\n/g, '<br>')
         } else if (i.type === 'image') {
-          return `<img src="${i.data}"/>`
+          return `<img src="${this.url(i.data)}"/>`
         } else {
           return ''
         }

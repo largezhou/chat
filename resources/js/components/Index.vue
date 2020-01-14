@@ -1,17 +1,16 @@
 <template>
   <div class="index">
-    <div class="page-main">
+    <div class="page-main" id="page-main">
       <div class="header">
         <h2 style="color: #fff;">CHAT</h2>
         <div class="flex-spacer"/>
-        <div class="header-item">
-          <lz-button @click="onStartChat">我要聊天</lz-button>
-        </div>
         <div v-if="user" class="header-item">
           <lz-button
-            style="width: 35px; padding: 0px;"
-            :action="onLogout"
-          >
+            @click="onSearch"
+            icon="svg-search"
+            icon-size="20px"
+          />
+          <lz-button class="avatar" :action="onLogout">
             <avatar :avatar="user.avatar" size="35px"/>
           </lz-button>
         </div>
@@ -38,6 +37,14 @@
       attach="#login-modal-btn"
       align="right-top"
     />
+
+    <chat-finder-modal
+      v-model="chatFinderModal"
+      attach="#page-main"
+      align="top"
+      top-offset="20px"
+      persistent
+    />
   </div>
 </template>
 
@@ -51,6 +58,7 @@ export default {
   components: { RecentContacts },
   data: () => ({
     loginModal: false,
+    chatFinderModal: false,
   }),
   computed: {
     ...mapState({
@@ -62,8 +70,8 @@ export default {
     async onLogout() {
       await this.$store.dispatch('logout')
     },
-    onStartChat() {
-      log(chat.connect())
+    onSearch() {
+      this.chatFinderModal = !this.chatFinderModal
     },
   },
 }
@@ -127,5 +135,9 @@ export default {
   border-bottom-right-radius: $chat-radius;
   padding-bottom: 30px;
   display: flex;
+}
+
+.avatar {
+  padding: 0 !important;
 }
 </style>
