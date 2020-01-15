@@ -4,6 +4,7 @@ import '@/bootstrap'
 import '@/components'
 import '@/directives'
 import store from '@/store'
+import '@/error-handle'
 
 Vue.use(require('@/libs/utils').default)
 

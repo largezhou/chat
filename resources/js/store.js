@@ -87,7 +87,9 @@ const store = new Vuex.Store({
         await postLogout()
       } catch (e) {
         const { response: res } = e
-        if (!res || (res.status !== 401) || (res.status !== 419)) {
+        // 如果不是 401 错误，则继续抛出
+        // 如果是 401，那等同于已经退出了
+        if (!res || (res.status !== 401)) {
           throw e
         }
       }

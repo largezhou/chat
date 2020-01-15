@@ -24,12 +24,18 @@ request.interceptors.response.use(
         case 404:
           alert(data.message || '404')
           break
+        case 419:
+          alert('页面已过期，需要重新刷新。')
+          location.reload()
+          break
         case 422:
           config.showValidationError && alert(Object.values(data.errors)[0][0])
           break
         default:
           alert(`服务器异常(code: ${res.status})`)
       }
+    } else {
+      alert('请求失败')
     }
 
     return Promise.reject(err)
