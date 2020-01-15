@@ -1,4 +1,5 @@
 import Axios from 'axios'
+import { Message } from '@/libs/message'
 
 const request = Axios.create({
   timeout: 60 * 1000,
@@ -19,23 +20,27 @@ request.interceptors.response.use(
 
       switch (res.status) {
         case 400:
-          data.message && alert(data.message)
+          data.message && Message.error(data.message)
           break
         case 404:
-          alert(data.message || '404')
+          Message.error(data.message || '请求的地址不存在。')
           break
         case 419:
-          alert('页面已过期，需要重新刷新。')
-          location.reload()
+          Message.error({
+            msg: '页面已过期，需要重新刷新。',
+            onHidden() {
+              location.reload()
+            },
+          })
           break
         case 422:
-          config.showValidationError && alert(Object.values(data.errors)[0][0])
+          config.showValidationError && Message.error(Object.values(data.errors)[0][0])
           break
         default:
-          alert(`服务器异常(code: ${res.status})`)
+          Message.error(`服务器异常(code: ${res.status})`)
       }
     } else {
-      alert('请求失败')
+      Message.error('请求失败')
     }
 
     return Promise.reject(err)

@@ -59,7 +59,7 @@ export default {
       try {
         const { data } = await postLogin(this.form)
         if (data.password) {
-          alert(`注册成功，密码为：[ ${data.password} ]`)
+          this.$message.success(`注册成功，密码为：[ ${data.password} ]`)
         }
         this.$emit('input', false)
         location.reload()

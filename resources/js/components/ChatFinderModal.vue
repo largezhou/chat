@@ -79,7 +79,7 @@ export default {
     async onAdd(item) {
       await storeUserFriend(item.id)
       this.$set(item, 'applied', true)
-      alert('已申请。')
+      this.$message.success('已申请。')
     },
   },
   watch: {

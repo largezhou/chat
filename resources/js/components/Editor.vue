@@ -47,7 +47,7 @@ export default {
         document.execCommand('insertText', false, content)
       } else {
         if (content.size > 200 * 1024) {
-          alert('图片太大了，滚粗')
+          this.$message.error('图片太大了，滚粗')
           return false
         }
 
@@ -166,11 +166,11 @@ export default {
     async onSend() {
       const { content, pureContent } = await this.formatValue()
       if (pureContent.length > 2 * 1024 * 1024) {
-        alert('消息内容 不能超过 2M 啊。')
+        this.$message.error('消息内容 不能超过 2M 啊。')
         return
       }
       if (!pureContent.trim()) {
-        alert('空的，发啥呢？')
+        this.$message.error('空的，发啥呢？')
         return
       }
       this.$emit('send', content)
