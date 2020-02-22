@@ -14,6 +14,7 @@ module.exports = {
     log: 'readonly',
     chat: 'readonly',
     ChatClient: 'readonly',
+    ChatEventEnum: 'readonly',
   },
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',

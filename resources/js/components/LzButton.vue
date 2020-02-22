@@ -9,8 +9,10 @@
     @click="onClick"
   >
     <svg-ripple class="loading" v-if="loading"/>
-    <component v-else-if="icon" :is="icon" :style="{ width: iconSize }"/>
-    <slot v-else/>
+    <template v-else>
+      <component v-if="icon" :is="icon" :style="{ width: iconSize }"/>
+      <slot/>
+    </template>
   </button>
 </template>
 

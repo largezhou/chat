@@ -2,7 +2,7 @@
 
 namespace App\ChatServer\Jobs;
 
-use App\ChatServer\Events\Event;
+use App\ChatServer\EventEnum;
 use App\ChatServer\WebSocketServer;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -52,7 +52,7 @@ class OtherLogout implements ShouldQueue
                     'user_id' => 0,
                 ]);
 
-                $ws->push($fd, Event::OTHER_LOGGED_IN);
+                $ws->push($fd, EventEnum::OTHER_LOGGED_IN);
             }
             $users->del($this->userId);
         }

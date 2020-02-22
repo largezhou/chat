@@ -10,10 +10,15 @@
   <link href="{{ mix('css/app.css') }}" rel="stylesheet">
 </head>
 <body>
+
+@inject('configService', \App\Services\ConfigService)
+@inject('user', \App\Models\User)
+
 <div
   id="app"
   data-user='@json(\Auth::user())'
-  data-config='@json(\App\Services\ConfigService::basic())'
+  data-config='@json($configService::basic())'
+  data-has-notifications='@json($user::hasNotifications())'
 >
   <main>
     @yield('content')

@@ -27,7 +27,7 @@ export default {
       default: '',
     },
     timeout: {
-      type: [Number, String],
+      type: Number,
       default: 3000,
     },
     msg: String,
@@ -65,8 +65,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import "~@s/_variables.scss";
+
 .message {
-  background: #019fff;
+  background: $color-info;
   position: fixed;
   border-radius: 10px;
   padding: 20px;
@@ -84,11 +86,11 @@ export default {
   word-break: break-all;
 
   &.success {
-    background: #67c23a;
+    background: $color-success;
   }
 
   &.error {
-    background: #f56c6c;
+    background: $color-error;
   }
 }
 

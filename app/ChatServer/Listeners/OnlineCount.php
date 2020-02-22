@@ -2,7 +2,7 @@
 
 namespace App\ChatServer\Listeners;
 
-use App\ChatServer\Events\Event;
+use App\ChatServer\EventEnum;
 
 class OnlineCount
 {
@@ -17,7 +17,7 @@ class OnlineCount
     {
         $event->ws->push(
             $event->fd(),
-            Event::ONLINE_COUNT,
+            EventEnum::ONLINE_COUNT,
             $event->clients()->count()
         );
     }

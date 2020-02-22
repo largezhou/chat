@@ -2,8 +2,8 @@
 
 namespace App\ChatServer\Listeners;
 
+use App\ChatServer\EventEnum;
 use App\ChatServer\Events\Event;
-use App\Models\User;
 use App\Models\UserFriend;
 
 class OnlineFriendIds
@@ -33,12 +33,12 @@ class OnlineFriendIds
         $onlineFriendIds = array_values(array_intersect($onlineUserIds, $friendIds));
 
         // 获取当前用户的在线好友状态
-        $event->ws->push($fd, Event::ONLINE_FRIEND_IDS, $onlineFriendIds);
+        $event->ws->push($fd, EventEnum::ONLINE_FRIEND_IDS, $onlineFriendIds);
 
         // 通知当前用户的好友用户已上线
         foreach ($onlineFriendIds as $id) {
             if ($friendFd = $event->users()->get($id, 'fd')) {
-                $event->ws->push($friendFd, Event::FRIEND_ONLINE, $userId);
+                $event->ws->push($friendFd, EventEnum::FRIEND_ONLINE, $userId);
             }
         }
     }

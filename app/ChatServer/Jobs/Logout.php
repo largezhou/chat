@@ -2,9 +2,8 @@
 
 namespace App\ChatServer\Jobs;
 
-use App\ChatServer\Events\Event;
+use App\ChatServer\EventEnum;
 use App\ChatServer\WebSocketServer;
-use App\Models\User;
 use App\Models\UserFriend;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -48,7 +47,7 @@ class Logout implements ShouldQueue
 
         foreach ($friendIds as $id) {
             if ($fd = $ws->users->get($id, 'fd')) {
-                $ws->push($fd, Event::FRIEND_OFFLINE, $this->userId);
+                $ws->push($fd, EventEnum::FRIEND_OFFLINE, $this->userId);
             }
         }
     }

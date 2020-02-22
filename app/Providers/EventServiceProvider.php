@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Listeners\AddSessionIdToEvent;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -42,6 +41,9 @@ class EventServiceProvider extends ServiceProvider
 
         \App\ChatServer\Events\Msg::class => [
             \App\ChatServer\Listeners\HandleMsg::class,
+        ],
+        \Illuminate\Notifications\Events\NotificationSent::class => [
+            \App\Listeners\DispatchNotificationToWS::class,
         ],
     ];
 

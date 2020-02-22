@@ -1,6 +1,7 @@
 import Cookie from 'js-cookie'
-import { jsonParse, randomChars } from '@/libs/utils'
+import { jsonParse } from '@/libs/utils'
 import store from '@/store'
+import _remove from 'lodash/remove'
 
 const config = store.state.config
 
@@ -28,39 +29,27 @@ class ChatClient {
    */
   #currentTried = 0
 
+  /**
+   * 初始化的 ws 事件
+   * @type {{}}
+   */
   #initialEventHandlers = {
     open: this.#onOpen,
     message: this.#onMessage,
     close: this.#onClose,
   }
 
+  /**
+   * 用户自定义的 ws 事件
+   * @type {{}}
+   */
+  #eventHandlers = {}
+
   #messageHandlers = {}
-
-  static get CONNECTED() { return 'connected' }
-
-  static get PING() { return 'ping' }
-
-  static get PONG() { return 'pong' }
-
-  static get ONLINE_COUNT() { return 'online_count' }
-
-  static get OTHER_LOGGED_IN() { return 'other_logged_in' }
-
-  static get AUTH() { return 'auth' }
-
-  static get ONLINE_FRIEND_IDS() { return 'online_friend_ids' }
 
   static get CLOSED_MANUALLY_CODE() { return 4000 }
 
   static get CLOSED_MANUALLY() { return 'closed_manually' }
-
-  static get FRIEND_ONLINE() { return 'friend_online' }
-
-  static get FRIEND_OFFLINE() { return 'friend_offline' }
-
-  static get MSG() { return 'msg' }
-
-  static get MSG_RES() { return 'msg_res' }
 
   static #ins
 
@@ -122,13 +111,19 @@ class ChatClient {
    */
   #initEvents() {
     const t = this.#initialEventHandlers
-    Object.keys(t).forEach(e => {
-      this.#ws.addEventListener(e, t[e].bind(this))
+    Object.keys(t).forEach(e => this.#ws.addEventListener(e, t[e].bind(this)))
+
+    const ct = this.#eventHandlers
+    Object.keys(ct).forEach(e => {
+      // 在重连时，不执行用户自定义的 close 事件
+      if (e !== 'close' || !this.#retrying) {
+        ct[e].forEach(h => this.#ws.addEventListener(e, h))
+      }
     })
   }
 
   #initHandlers() {
-    this.addHandler(ChatClient.CONNECTED, this.#connectedHandler.bind(this))
+    this.addHandler(ChatEventEnum.CONNECTED, this.#connectedHandler.bind(this))
   }
 
   #onOpen(e) {
@@ -138,7 +133,7 @@ class ChatClient {
   }
 
   #sendOnlineCount() {
-    if (this.send(ChatClient.ONLINE_COUNT)) {
+    if (this.send(ChatEventEnum.ONLINE_COUNT)) {
       setTimeout(this.#sendOnlineCount.bind(this), 5 * 1000)
     }
   }
@@ -146,7 +141,7 @@ class ChatClient {
   #connectedHandler(data, client) {
     const sendPing = () => {
       setTimeout(() => {
-        if (this.send(ChatClient.PING)) {
+        if (this.send(ChatEventEnum.PING)) {
           sendPing()
         }
       }, data.interval * 1000)
@@ -230,7 +225,7 @@ class ChatClient {
   }
 
   #sendAuth() {
-    this.send(ChatClient.AUTH, Cookie.get('laravel_session'))
+    this.send(ChatEventEnum.AUTH, Cookie.get('laravel_session'))
   }
 
   isConnected() {
@@ -249,6 +244,21 @@ class ChatClient {
 
   ws() {
     return this.#ws
+  }
+
+  addEventListener(eventName, handler) {
+    if (this.#eventHandlers[eventName] === undefined) {
+      this.#eventHandlers[eventName] = []
+    }
+
+    this.#eventHandlers[eventName].push(handler)
+    this.#ws.addEventListener(eventName, handler)
+  }
+
+  removeEventListener(eventName, handler) {
+    const handlers = this.#eventHandlers[eventName] || []
+    _remove(handlers, i => i === handler)
+    this.#ws.removeEventListener(eventName, handler)
   }
 }
 

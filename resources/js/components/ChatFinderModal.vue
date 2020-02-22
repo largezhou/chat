@@ -19,11 +19,11 @@
             <div class="ellipsis name" :title="item.name">{{ item.name }}</div>
             <div class="ellipsis username" :title="item.username">{{ item.username }}</div>
           </div>
-          <div v-if="!item.applied" class="add">
+          <div class="add">
             <lz-button
               icon="svg-user-plus"
               icon-size="24px"
-              :action="() => onAdd(item)"
+              :action="() => onAdd(item.id)"
             />
           </div>
         </div>
@@ -76,9 +76,8 @@ export default {
     },
   },
   methods: {
-    async onAdd(item) {
-      await storeUserFriend(item.id)
-      this.$set(item, 'applied', true)
+    async onAdd(id) {
+      await storeUserFriend(id)
       this.$message.success('已申请。')
     },
   },

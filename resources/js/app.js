@@ -8,6 +8,7 @@ import '@/error-handle'
 
 Vue.use(require('@/libs/utils').default)
 Vue.use(require('@/libs/message').default)
+Vue.use(require('@/libs/notice').default)
 
 const app = new Vue({
   store,

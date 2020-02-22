@@ -2,7 +2,7 @@
 
 namespace App\ChatServer\Listeners;
 
-use App\ChatServer\Events\Event;
+use App\ChatServer\EventEnum;
 
 class Pong
 {
@@ -17,7 +17,7 @@ class Pong
     {
         $event->ws->push(
             $event->fd(),
-            Event::PONG
+            EventEnum::PONG
         );
     }
 }

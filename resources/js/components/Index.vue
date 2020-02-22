@@ -10,6 +10,13 @@
             icon="svg-search"
             icon-size="20px"
           />
+          <lz-button
+            class="notification"
+            icon="svg-notification"
+            icon-size="20px"
+          >
+            <span v-show="hasNotifications" class="indicate"/>
+          </lz-button>
           <lz-button class="avatar" :action="onLogout">
             <avatar :avatar="user.avatar" size="35px"/>
           </lz-button>
@@ -51,11 +58,9 @@
 <script>
 import { mapState } from 'vuex'
 import { getUserInfo } from '@/api'
-import RecentContacts from '@c/RecentContacts'
 
 export default {
   name: 'Index',
-  components: { RecentContacts },
   data: () => ({
     loginModal: false,
     chatFinderModal: false,
@@ -63,6 +68,7 @@ export default {
   computed: {
     ...mapState({
       user: state => state.user,
+      hasNotifications: state => state.hasNotifications,
     }),
   },
   methods: {
@@ -108,13 +114,27 @@ export default {
   display: flex;
   align-items: center;
   padding: 0 40px;
+
+  .notification {
+    position: relative;
+
+    .indicate {
+      position: absolute;
+      background: #ff3535;
+      top: 0;
+      right: 0;
+      border-radius: 50%;
+      width: 10px;
+      height: 10px;
+    }
+  }
 }
 
 .header-item {
   display: flex;
   flex-direction: row;
 
-  button + button {
+  > * + * {
     margin-left: 30px;
   }
 

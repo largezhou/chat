@@ -47,6 +47,7 @@ const store = new Vuex.Store({
      * @var {{targetId, msg}|null}
      */
     recentContact: null,
+    hasNotifications: getData('hasNotifications'),
   },
   mutations: {
     SET_USER(state, user) {
@@ -79,6 +80,9 @@ const store = new Vuex.Store({
     },
     SET_RECENT_CONTACT(state, payload) {
       state.recentContact = payload
+    },
+    SET_HAS_NOTIFICATIONS(state, has) {
+      state.hasNotifications = has
     },
   },
   actions: {

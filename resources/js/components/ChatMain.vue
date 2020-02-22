@@ -6,8 +6,6 @@
         <span>{{ target.name }}</span>
         <online-indicate :id="target.id"/>
       </div>
-      <div class="flex-spacer"/>
-      <span style="color: #fff;">好友</span>
     </div>
     <div class="dialogs-main" ref="dialogsMain">
       <dialog-item
@@ -69,7 +67,7 @@ export default {
         target: this.target.id,
         content,
       }
-      chat.send(ChatClient.MSG, data)
+      chat.send(ChatEventEnum.MSG, data)
 
       const msg = {
         user_id: this.user.id,

@@ -2,13 +2,10 @@
 
 namespace App\Providers;
 
-use App\Models\Msg;
-use App\Models\UserFriend;
-use App\Observers\MsgObserver;
-use App\Observers\UserFriendObserver;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
-class ModelEventServiceProvider extends ServiceProvider
+class RelationMorphServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
@@ -27,7 +24,8 @@ class ModelEventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        Msg::observe(MsgObserver::class);
-        UserFriend::observe(UserFriendObserver::class);
+        Relation::morphMap([
+            'user' => \App\Models\User::class,
+        ]);
     }
 }

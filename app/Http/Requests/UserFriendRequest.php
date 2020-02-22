@@ -27,14 +27,14 @@ class UserFriendRequest extends FormRequest
                 'required',
                 Rule::exists('users', 'id')->whereNot('id', $userId),
                 new IsNotFriend($userId),
-                Rule::unique('user_friend')
-                    ->where(function (Builder $builder) use ($validTime, $userId) {
-                        $builder->where([
-                            ['user_id', $userId],
-                            ['accepted', false],
-                            ['created_at', '>', $validTime], // N 天内只能申请一次
-                        ]);
-                    }),
+                // Rule::unique('user_friend')
+                //     ->where(function (Builder $builder) use ($validTime, $userId) {
+                //         $builder->where([
+                //             ['user_id', $userId],
+                //             ['accepted', false],
+                //             ['created_at', '>', $validTime], // N 天内只能申请一次
+                //         ]);
+                //     }),
             ],
         ];
     }

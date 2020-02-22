@@ -2,7 +2,6 @@
 
 namespace App\ChatServer;
 
-use App\ChatServer\Events\Event;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Artisan;
@@ -142,7 +141,7 @@ class WebSocketServer
 
         $this->clients->set($fd, []);
 
-        $this->push($fd, Event::CONNECTED, [
+        $this->push($fd, EventEnum::CONNECTED, [
             'interval' => $this->config['interval'],
             'timeout' => $this->config['timeout'],
         ]);

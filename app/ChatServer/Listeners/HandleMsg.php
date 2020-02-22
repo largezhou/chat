@@ -2,20 +2,23 @@
 
 namespace App\ChatServer\Listeners;
 
+use App\ChatServer\EventEnum;
 use App\ChatServer\Events\Event;
 use App\Models\Msg;
 use App\Models\UserFriend;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class HandleMsg
 {
     protected const FOLDER = 'uploads/msg';
+
     /**
      * @var \Illuminate\Contracts\Filesystem\Filesystem
      */
     protected $disk;
+
     /**
      * @var \App\ChatServer\Events\Event
      */
@@ -36,11 +39,9 @@ class HandleMsg
     public function handle(Event $event)
     {
         $this->event = $event;
-        $fd = $event->fd();
 
-        // TODO 放到任务中间件中？
-        $userId = $event->clients()->get($fd, 'user_id');
-        if (!$userId) {
+        if (!$userId = $this->checkSession()) {
+            $this->response('登录已失效。');
             return;
         }
 
@@ -63,8 +64,23 @@ class HandleMsg
         $this->response();
 
         if ($targetFd = $event->users()->get($targetId, 'fd')) {
-            $event->ws->push($targetFd, Event::MSG, $msg);
+            $event->ws->push($targetFd, EventEnum::MSG, $msg);
         }
+    }
+
+    protected function checkSession()
+    {
+        $userId = $this->event->clients()->get($this->event->fd(), 'user_id');
+        if (!$userId) {
+            return false;
+        }
+
+        $sessionId = $this->event->users()->get($userId, 'session_id');
+        if (!Cache::get($sessionId)) {
+            return false;
+        }
+
+        return $userId;
     }
 
     protected function validate(array $data): bool
@@ -90,7 +106,7 @@ class HandleMsg
     {
         $e = $this->event;
 
-        $e->ws->push($e->fd(), Event::MSG_RES, [
+        $e->ws->push($e->fd(), EventEnum::MSG_RES, [
             'key' => $e->data()['key'] ?? null,
             'error' => $error,
         ]);

@@ -2,8 +2,8 @@
 
 namespace App\ChatServer\Listeners;
 
+use App\ChatServer\EventEnum;
 use App\ChatServer\Events\Auth as AuthEvent;
-use App\ChatServer\Events\Event;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Auth as LAuth;
 use Illuminate\Support\Facades\Crypt;
@@ -35,7 +35,7 @@ class Auth
             $oldFd = $users->get($userId, 'fd');
             if ($oldFd && ($oldFd != $fd)) {
                 $clients->set($oldFd, ['user_id' => 0]);
-                $event->ws->push($oldFd, Event::OTHER_LOGGED_IN);
+                $event->ws->push($oldFd, EventEnum::OTHER_LOGGED_IN);
             }
 
             $clients->set($fd, [
@@ -49,7 +49,7 @@ class Auth
         } else {
             $res = 'failed';
         }
-        $event->ws->push($fd, Event::AUTH, $res);
+        $event->ws->push($fd, EventEnum::AUTH, $res);
     }
 
     protected function startSession(string $key)
