@@ -9,18 +9,24 @@ class FriendRequested extends Notification
     /**
      * @var int
      */
-    protected $recordId;
+    protected $userFriendId;
+    /**
+     * @var int
+     */
+    protected $inviterId;
 
     /**
      * Create a new notification instance.
      *
-     * @param int $recordId
+     * @param int $userFriendId 好友关系记录 ID
+     * @param int $inviterId 邀请人 ID
      *
      * @return void
      */
-    public function __construct(int $recordId)
+    public function __construct(int $userFriendId, int $inviterId)
     {
-        $this->recordId = $recordId;
+        $this->userFriendId = $userFriendId;
+        $this->inviterId = $inviterId;
     }
 
     public function via($notifiable)
@@ -38,7 +44,8 @@ class FriendRequested extends Notification
     public function toArray($notifiable)
     {
         return [
-            'record_id' => $this->recordId,
+            'user_friend_id' => $this->userFriendId,
+            'inviter_id' => $this->inviterId,
         ];
     }
 }

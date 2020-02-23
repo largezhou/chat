@@ -36,3 +36,7 @@ export const storeUserFriend = friendId => {
 export const getUsers = q => {
   return Request.get('/users', { params: { q } })
 }
+
+export const getNotifications = () => {
+  return Request.get('/notifications')
+}

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 
 import './svg'
+import './notifications'
 
 Vue.component('Index', require('./Index.vue').default)
 Vue.component('RecentContactItem', require('./RecentContactItem').default)

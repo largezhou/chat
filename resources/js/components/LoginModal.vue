@@ -3,7 +3,6 @@
     v-bind="$attrs"
     v-on="$listeners"
     @hidden="onHidden"
-    class="login-modal"
     width="185px"
   >
     <template #title>登录</template>

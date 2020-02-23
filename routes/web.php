@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserFriendController;
 use Illuminate\Support\Facades\Auth;
@@ -21,5 +22,7 @@ Route::middleware(['auth'])
         Route::post('/user/recent-contacts', [UserController::class, 'storeRecentContacts']);
 
         Route::post('/user-friends', [UserFriendController::class, 'store'])->name('user-friend.store');
+
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
     });
 

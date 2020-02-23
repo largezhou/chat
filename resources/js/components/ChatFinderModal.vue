@@ -2,7 +2,6 @@
   <modal
     v-bind="$attrs"
     v-on="$listeners"
-    class="chat-finder-modal"
     width="550px"
   >
     <template #title>查找用户</template>

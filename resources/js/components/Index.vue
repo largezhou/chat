@@ -11,9 +11,11 @@
             icon-size="20px"
           />
           <lz-button
+            id="notification-modal-btn"
             class="notification"
             icon="svg-notification"
             icon-size="20px"
+            @click="notificationCenterModal = !notificationCenterModal"
           >
             <span v-show="hasNotifications" class="indicate"/>
           </lz-button>
@@ -52,18 +54,28 @@
       top-offset="20px"
       persistent
     />
+
+    <notification-center-modal
+      v-model="notificationCenterModal"
+      attach="#notification-modal-btn"
+      align="right-top"
+      persistent
+    />
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import { getUserInfo } from '@/api'
+import NotificationCenterModal from '@c/NotificationCenterModal'
 
 export default {
   name: 'Index',
+  components: { NotificationCenterModal },
   data: () => ({
     loginModal: false,
     chatFinderModal: false,
+    notificationCenterModal: true,
   }),
   computed: {
     ...mapState({

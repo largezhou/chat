@@ -12,12 +12,15 @@ class UserFriendObserver
     /**
      * Handle the msg "created" event.
      *
-     * @param \App\Models\UserFriend $record
+     * @param \App\Models\UserFriend $userFriend
      *
      * @return void
      */
-    public function created(UserFriend $record)
+    public function created(UserFriend $userFriend)
     {
-        Notification::send(User::find($record->friend_id), new FriendRequested($record->id));
+        Notification::send(
+            User::find($userFriend->friend_id),
+            new FriendRequested($userFriend->id, $userFriend->user_id)
+        );
     }
 }
