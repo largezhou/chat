@@ -1,0 +1,21 @@
+.notification {
+  padding: 19px 20px;
+  position: relative;
+  word-break: break-all;
+
+  &::after {
+    position: absolute;
+    right: 0px;
+    bottom: 100%;
+    left: 0px;
+    height: 1px;
+    padding: 0px 20px;
+    background-color: #12152f;
+    content: '';
+    background-clip: content-box;
+  }
+}
+
+.unread {
+  background: #202142;
+}
