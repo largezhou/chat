@@ -124,4 +124,10 @@ class User extends Authenticatable
     {
         return Auth::user() ? Auth::user()->notifications()->exists() : false;
     }
+
+    public function notifications()
+    {
+        return $this->morphMany(Notification::class, 'notifiable')
+            ->orderBy('created_at', 'desc');
+    }
 }

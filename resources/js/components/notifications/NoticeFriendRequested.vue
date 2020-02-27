@@ -19,8 +19,13 @@
 </template>
 
 <script>
+import { updateNotification, updateUserFriend } from '@/api'
+
 export default {
   name: 'NoticeFriendRequested',
+  data: () => ({
+    reading: false,
+  }),
   props: {
     data: Object,
   },
@@ -33,19 +38,29 @@ export default {
     },
   },
   methods: {
-    onRequest() {
+    async onRequest() {
       if (this.invalid) {
         return
       }
 
-      log('同意')
+      const { data } = await updateUserFriend(
+        this.data.data.user_friend_id,
+        { accepted: 1 },
+      )
+      log(data)
     },
-    onMarkAsRead() {
-      if (this.data.read_at) {
+    async onMarkAsRead() {
+      if (this.data.read_at || this.reading) {
         return
       }
 
-      log('标记为已读')
+      this.reading = true
+      try {
+        const { data } = await updateNotification(this.data.id, { read_at: 1 })
+        this.data.read_at = data.read_at
+      } finally {
+        this.reading = false
+      }
     },
     onViewUser() {
       if (this.invalid) {

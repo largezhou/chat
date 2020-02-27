@@ -42,9 +42,14 @@ export default {
   },
   methods: {
     async getItems() {
-      const { data } = await getNotifications()
-      this.items = data.data
-      this.page = data.meta
+      try {
+        this.loading = true
+        const { data } = await getNotifications()
+        this.items = data.data
+        this.page = data.meta
+      } finally {
+        this.loading = false
+      }
     },
   },
 }

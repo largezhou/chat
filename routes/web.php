@@ -21,8 +21,10 @@ Route::middleware(['auth'])
         Route::get('/user/recent-contacts', [UserController::class, 'getRecentContacts'])->name('user.recent-contacts');
         Route::post('/user/recent-contacts', [UserController::class, 'storeRecentContacts']);
 
-        Route::post('/user-friends', [UserFriendController::class, 'store'])->name('user-friend.store');
+        Route::post('/user-friends', [UserFriendController::class, 'store'])->name('user-friends.store');
+        Route::put('/user-friends/{user_friend}', [UserFriendController::class, 'update'])->name('user-friends.update');
 
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
+        Route::put('/notifications/{notification}', [NotificationController::class, 'update'])->name('notifications.update');
     });
 

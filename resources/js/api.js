@@ -33,10 +33,18 @@ export const storeUserFriend = friendId => {
   return Request.post('/user-friends', { friend_id: friendId })
 }
 
+export const updateUserFriend = (id, data) => {
+  return Request.put(`/user-friends/${id}`, data)
+}
+
 export const getUsers = q => {
   return Request.get('/users', { params: { q } })
 }
 
 export const getNotifications = () => {
   return Request.get('/notifications')
+}
+
+export const updateNotification = (id, data) => {
+  return Request.put(`/notifications/${id}`, data)
 }

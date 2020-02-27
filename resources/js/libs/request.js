@@ -17,6 +17,7 @@ request.interceptors.response.use(
 
     if (res) {
       const { data } = res
+      log(data)
 
       switch (res.status) {
         case 400:
@@ -35,6 +36,9 @@ request.interceptors.response.use(
           break
         case 422:
           config.showValidationError && Message.error(Object.values(data.errors)[0][0])
+          break
+        case 403:
+          Message.error(`没有权限：${data.message}`)
           break
         default:
           Message.error(`服务器异常(code: ${res.status})`)
@@ -116,6 +120,16 @@ class Request {
    */
   static post(url, data, config) {
     return new Request('post', arguments)
+  }
+
+  /**
+   * @param {string} url
+   * @param {*} [data]
+   * @param {AxiosRequestConfig} [config]
+   * @return {Request}
+   */
+  static put(url, data, config) {
+    return new Request('put', arguments)
   }
 }
 

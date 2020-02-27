@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Enums\RelationMorphEnums;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,7 +26,7 @@ class RelationMorphServiceProvider extends ServiceProvider
     public function boot()
     {
         Relation::morphMap([
-            'user' => \App\Models\User::class,
+            RelationMorphEnums::USER => \App\Models\User::class,
         ]);
     }
 }

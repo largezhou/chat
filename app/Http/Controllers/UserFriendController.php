@@ -20,4 +20,9 @@ class UserFriendController extends Controller
 
         return $this->created(UserFriendResource::make($rec));
     }
+
+    public function update(UserFriend $userFriend)
+    {
+        dd($userFriend);
+    }
 }
