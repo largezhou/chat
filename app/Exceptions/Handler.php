@@ -2,8 +2,10 @@
 
 namespace App\Exceptions;
 
+use App\Models\UserFriend;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\RedirectResponse;
 
@@ -28,10 +30,15 @@ class Handler extends ExceptionHandler
         'password_confirmation',
     ];
 
+    protected $modelNotFoundMessage = [
+        UserFriend::class => '好友申请记录不存在，可能已经同意了该申请。',
+    ];
+
     /**
      * Report or log an exception.
      *
-     * @param  \Exception  $exception
+     * @param \Exception $exception
+     *
      * @return void
      */
     public function report(Exception $exception)
@@ -42,12 +49,19 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Exception  $exception
+     * @param \Illuminate\Http\Request $request
+     * @param \Exception $exception
+     *
      * @return \Illuminate\Http\Response
      */
     public function render($request, Exception $exception)
     {
+        if ($exception instanceof ModelNotFoundException) {
+            $exception = new ModelNotFoundException(
+                $this->modelNotFoundMessage[$exception->getModel()] ?? $exception->getMessage()
+            );
+        }
+
         return parent::render($request, $exception);
     }
 

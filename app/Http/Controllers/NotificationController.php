@@ -23,6 +23,6 @@ class NotificationController extends Controller
             $notification->markAsRead();
         }
 
-        return $this->created($notification);
+        return $this->created(NotificationResource::make($notification));
     }
 }

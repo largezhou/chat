@@ -56,17 +56,19 @@ export default {
 </script>
 
 <style scoped lang="scss">
+$min-height: 61px;
+
 .notification-center {
   margin-top: 20px;
   border-top: 1px solid #12152f;
   display: flex;
   flex-direction: column;
-  min-height: 130px;
   overflow: hidden;
 }
 
 .notifications {
   max-height: 300px;
+  min-height: $min-height;
   overflow-x: hidden;
   overflow-y: scroll;
   margin-right: -17px;
@@ -74,7 +76,7 @@ export default {
 
 .empty {
   text-align: center;
-  line-height: 75px;
+  line-height: $min-height;
   color: #c1c1c1;
 }
 
@@ -85,7 +87,7 @@ export default {
 }
 
 .loading {
-  height: 75px;
+  height: $min-height;
 }
 </style>
 

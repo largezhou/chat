@@ -7,6 +7,8 @@ use App\Traits\BothUsers;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
+use phpDocumentor\Reflection\Types\Boolean;
 
 /**
  * @method $this|\Illuminate\Database\Eloquent\Builder onlyAccepted(bool $onlyAccepted = true)
@@ -89,5 +91,31 @@ class UserFriend extends Model
                 return $id == $userId;
             })
             ->toArray();
+    }
+
+    /**
+     * 同意成为好友，并删除其他多余的好友申请记录
+     *
+     * @return bool
+     */
+    public function accept(): bool
+    {
+        if ($this->accepted) {
+            return false;
+        }
+
+        DB::beginTransaction();
+
+        $this->fill(['accepted' => true])->save();
+        $this->query()
+            ->bothUsers($this->user_id, $this->friend_id, 'user_id', 'friend_id')
+            ->where('id', '<>', $this->id)
+            ->get()
+            ->each
+            ->delete();
+
+        DB::commit();
+
+        return true;
     }
 }

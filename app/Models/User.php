@@ -122,7 +122,7 @@ class User extends Authenticatable
 
     public static function hasNotifications()
     {
-        return Auth::user() ? Auth::user()->notifications()->exists() : false;
+        return Auth::user() ? Auth::user()->unreadNotifications()->exists() : false;
     }
 
     public function notifications()

@@ -21,8 +21,12 @@ class UserFriendController extends Controller
         return $this->created(UserFriendResource::make($rec));
     }
 
-    public function update(UserFriend $userFriend)
+    public function update(UserFriendRequest $request, UserFriend $userFriend)
     {
-        dd($userFriend);
+        if ($request->input('accepted') && !$userFriend->accept()) {
+            return $this->error('你们已经是好友了。');
+        }
+
+        return $this->created(UserFriendResource::make($userFriend));
     }
 }

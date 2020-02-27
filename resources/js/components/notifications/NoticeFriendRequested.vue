@@ -25,6 +25,7 @@ export default {
   name: 'NoticeFriendRequested',
   data: () => ({
     reading: false,
+    accepting: false,
   }),
   props: {
     data: Object,
@@ -39,15 +40,23 @@ export default {
   },
   methods: {
     async onRequest() {
-      if (this.invalid) {
+      if (this.invalid || this.accepting) {
         return
       }
 
-      const { data } = await updateUserFriend(
-        this.data.data.user_friend_id,
-        { accepted: 1 },
-      )
-      log(data)
+      this.accepting = true
+      try {
+        const { data } = await updateUserFriend(
+          this.data.data.user_friend_id,
+          { accepted: 1 },
+        )
+
+        if (data.accepted) {
+          this.$message.success(`你和 ${this.inviterName} 现在是好友了。`)
+        }
+      } finally {
+        this.accepting = false
+      }
     },
     async onMarkAsRead() {
       if (this.data.read_at || this.reading) {
